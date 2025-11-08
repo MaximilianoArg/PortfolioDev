@@ -1,0 +1,30 @@
+<!-- Contenedor principal para centrar el contenido en toda la pantalla -->
+<main class="flex items-center justify-center h-screen bg-slate-100 dark:bg-gray-900">
+
+  <!-- La tarjeta principal que usa los colores de tu tema -->
+  <div class="text-center p-8 md:p-12 rounded-xl shadow-2xl bg-sidebar-dark text-sidebar-light-text max-w-lg mx-4">
+
+    <!-- El número 404, grande y con un gradiente sutil para darle un toque moderno -->
+    <h1 class="text-8xl md:text-9xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-blue-500">
+      404
+    </h1>
+
+    <!-- El título del error -->
+    <p class="mt-4 text-2xl md:text-3xl font-semibold">
+      Página no encontrada
+    </p>
+
+    <!-- Un mensaje amigable explicando la situación -->
+    <p class="mt-4 text-lg text-gray-400">
+      Lo sentimos, la página que buscas no existe o ha sido movida.
+    </p>
+
+    <!-- Un botón de "call to action" para volver a un lugar seguro (el dashboard) -->
+    <a routerLink="/" class="mt-8 inline-block px-8 py-3 font-bold text-sidebar-light-text border-2 border-sidebar-light-text/50 rounded-lg 
+                            hover:bg-sidebar-light-text/10 hover:border-sidebar-light-text 
+                            transition-all duration-300 ease-in-out">
+      Volver al Dashboard
+    </a>
+
+  </div>
+</main>

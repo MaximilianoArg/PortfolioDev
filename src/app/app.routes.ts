@@ -4,6 +4,7 @@ import { ComponenteLogueo } from './login/login';
 import { Desloguear } from './desloguear/desloguear';
 import { PanelPrincipal } from './panel-principal/panel-principal';
 import { GuardiaAutenticacion } from './autenticar-guard';
+import { NoEncontradoComponente } from './paginas/no-encontrado/no-encontrado';
 
 export const routes: Routes = [
     // Nueva direcciones para las rutas..
@@ -34,4 +35,5 @@ export const routes: Routes = [
             { path: '', redirectTo: 'panel_principal', pathMatch: 'full' }
         ]
     },
+    { path: '**', component: NoEncontradoComponente },
 ];
