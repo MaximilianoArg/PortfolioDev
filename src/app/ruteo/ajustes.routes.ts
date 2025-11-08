@@ -2,17 +2,21 @@ import { Routes } from '@angular/router';
 
 export const AJUSTES_RUTAS: Routes = [
     {
-        path: 'inversiones',
+        path: 'ajustes',
         children: [
-            { path: 'cartera', loadComponent: () => import('./inversiones/cartera/cartera.component').then(m => m.CarteraComponent) },
-            // ... otras rutas de inversiones
+            { path: 'ayuda', loadComponent: () => import('../ajustes/ayuda/ayuda').then(m => m.AyudaComponente) },
         ]
     },
     {
         path: 'balances',
         children: [
-            { path: 'mensual', loadComponent: () => import('./balances/mensual/mensual.component').then(m => m.ResumenMensualComponent) },
-            // ... otras rutas de balances
+            { path: 'general', loadComponent: () => import('../ajustes/general/general').then(m => m.GeneralComponente) },
+        ]
+    },
+    {
+        path: 'perfil',
+        children: [
+            { path: 'general', loadComponent: () => import('../ajustes/perfil/perfil').then(m => m.PerfilComponente) },
         ]
     }
 ];

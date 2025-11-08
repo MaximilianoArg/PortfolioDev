@@ -4,18 +4,10 @@
       [estaColapsado]="estaColapsado"
       (lateralSeleccionado)="alHacerClick()">
     </app-barra-lateral>
-    <!--<button
-      class="sidebar-toggle-btn"
-      [ngClass]="{ 'sidebar-collapsed': estaColapsado }"
-      (click)="alHacerClick()">
-      <i
-        [class]="
-          estaColapsado ? 'fas fa-arrow-right' : 'fas fa-arrow-left'
-        ">
-        </i>
-    </button>-->
   </div>
   <main class="content" [ngClass]="{ 'content-expanded': estaColapsado }">
-    <div class="content-inner">El contenido hiria aqui.</div>
+    <div class="content-inner">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 </div>

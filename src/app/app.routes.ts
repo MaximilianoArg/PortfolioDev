@@ -6,10 +6,6 @@ import { PanelPrincipal } from './panel-principal/panel-principal';
 import { GuardiaAutenticacion } from './autenticar-guard';
 
 export const routes: Routes = [
-    /*{ path: 'login', component: ComponenteLogueo },
-    { path: 'logout', component: Desloguear },
-    { path: 'panel-principal', component: PanelPrincipal, canActivate: [GuardiaAutenticacion]},
-    { path: '', redirectTo: '/login', pathMatch: 'full' }*/
     // Nueva direcciones para las rutas..
     { path: 'login', component: ComponenteLogueo },
     { path: 'logout', component: Desloguear },
