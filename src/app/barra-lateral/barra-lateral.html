@@ -6,7 +6,7 @@
   </div>
   <div class="sidebar-menu">
     <ul>
-      @for (item of menuItems; track item.etiqueta) {
+      @for (item of menuItems; track item.id) {
         <li class="sidebar-menu-item">
           <a [routerLink]="item.ruta"
              routerLinkActive="menu-item-active"

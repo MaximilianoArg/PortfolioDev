@@ -1,4 +1,5 @@
 export interface MenuItem {
+    id: number;
     icono?: string;
     etiqueta?: string;
     ruta?: string;

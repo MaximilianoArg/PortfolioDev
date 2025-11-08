@@ -38,7 +38,7 @@ export class ComponenteLogueo implements OnInit {
     this.servicioAutenticacion.loguear(this.usuario, this.contra)
     .subscribe( datos => {
       console.log("El logueo fue exitoso: " + datos);
-      if(datos) this.ruteo.navigate(['/panel-principal']);
+      if(datos) this.ruteo.navigate(['']);
     });
   }
 }
