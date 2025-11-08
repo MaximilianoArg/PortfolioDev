@@ -68,6 +68,9 @@
               "buildTarget": "software-engineering:build:development"
             }
           },
+          "options": { 
+            "allowedHosts": ["nonhomiletic-tricia-unpreventively.ngrok-free.dev"]
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
