@@ -31,7 +31,7 @@ export const routes: Routes = [
                 path: 'productividad',
                 loadChildren: () => import('./ruteo/productividad.routes').then(m => m.PRODUCTIVDAD_RUTAS)
             },
-            { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+            { path: '', redirectTo: 'panel_principal', pathMatch: 'full' }
         ]
     },
 ];
