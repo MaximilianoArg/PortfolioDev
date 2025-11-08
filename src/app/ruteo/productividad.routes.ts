@@ -3,9 +3,7 @@ import { Routes } from '@angular/router';
 export const PRODUCTIVDAD_RUTAS: Routes = [
     {
         path: 'agenda',
-        children: [
-            { path: 'agenda', loadComponent: () => import('../productividad/agenda/agenda').then(m => m.AgendaComponente) },
-        ]
+        loadComponent: () => import('../productividad/agenda/agenda').then(m => m.AgendaComponente)
     },
     {
         path: 'habitos',
@@ -17,8 +15,6 @@ export const PRODUCTIVDAD_RUTAS: Routes = [
     },
     {
         path: 'notas',
-        children: [
-            { path: 'notas', loadComponent: () => import('../productividad/notas/notas').then(m => m.NotasComponente) },
-        ]
+        loadComponent: () => import('../productividad/notas/notas').then(m => m.NotasComponente)
     }
 ];

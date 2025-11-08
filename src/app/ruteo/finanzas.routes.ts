@@ -21,7 +21,7 @@ export const FINANZAS_RUTAS: Routes = [
                 loadComponent: () => import('../finanzas/balances/reportes/reportes').then(m => m.ReportesComponente) 
             },
             {
-                path: '', redirectTo: 'mensual', pathMatch: 'full'
+                path: '', redirectTo: 'categorias', pathMatch: 'full'
             }
         ]
     },
