@@ -1,6 +1,6 @@
 export interface MenuItem {
     icono?: string;
-    etiqueta: string;
+    etiqueta?: string;
     ruta?: string;
     hijo?: MenuItem[];
     estaAbierto?: boolean;
