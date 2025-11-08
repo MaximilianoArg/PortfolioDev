@@ -1,15 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, EventEmitter, Input, Output  } from '@angular/core';
-// Interface para los elementos
-interface MenuItem {
-  icono: string;
-  etiqueta: string;
-  ruta: string;
-  hijo?: MenuItem[];
-  estaAbierto?: boolean;
-}
-//
+import { MenuItem } from '../shared/interfaces/menu-item.interface';
+
 @Component({
   selector: 'app-barra-lateral',
   imports: [CommonModule, RouterModule],
