@@ -1,0 +1,42 @@
+<div class="sidebar" [ngClass]="{ 'sidebar-collapsed': estaColapsado }">
+  <div class="sidebar-header">
+    <a href="#" (click)="presionarBarraLateral(); $event.preventDefault()" class="sidebar-logo">
+      {{ estaColapsado ? 'LM' : 'Leiva Maximiliano' }}
+    </a>
+  </div>
+  <div class="sidebar-menu">
+    <ul>
+      @for (item of menuItems; track item.etiqueta) {
+        <li class="sidebar-menu-item">
+          <a [routerLink]="item.ruta"
+             routerLinkActive="menu-item-active"
+             [routerLinkActiveOptions]="{ exact: item.hijo ? false : true }"
+             class="sidebar-item"
+             [ngClass]="{ 'has-children': item.hijo }"
+             (click)="item.hijo && !estaColapsado ? item.estaAbierto = !item.estaAbierto : null">
+            <i [class]="item.icono"></i>
+            <span class="sidebar-item-text">{{ item.etiqueta }}</span>
+            @if (item.hijo && !estaColapsado) {
+              <i class="fas fa-chevron-down sidebar-item-arrow"
+                 [ngClass]="{ 'rotated': item.estaAbierto }"></i>
+            }
+          </a>
+          @if (item.hijo && !estaColapsado && item.estaAbierto) {
+            <ul class="sidebar-submenu">
+              @for (child of item.hijo; track child.etiqueta) {
+                <li>
+                  <a [routerLink]="child.ruta"
+                     routerLinkActive="menu-item-active"
+                     class="sidebar-item sidebar-subitem">
+                    <i [class]="child.icono"></i>
+                    <span class="sidebar-item-text">{{ child.etiqueta }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</div>

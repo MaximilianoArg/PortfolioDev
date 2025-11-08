@@ -1,0 +1,78 @@
+Opción 1: Comprimir el Proyecto para Seguir Desarrollando en otra PC (Lo más común)
+
+Este es el escenario donde quieres que otra persona (o tú mismo en otra computadora) pueda abrir el código, instalar las dependencias y ejecutar ng serve.
+Paso 1: Archivos y Carpetas que DEBES incluir
+
+Selecciona manualmente los siguientes archivos y carpetas de tu proyecto para incluirlos en el ZIP:
+
+    src/ (¡La más importante! Contiene todo tu código: componentes, servicios, estilos, etc.)
+
+    angular.json (Archivo de configuración del proyecto Angular)
+
+    package.json (Define las dependencias y scripts del proyecto)
+
+    package-lock.json (Asegura que se instalen las mismas versiones de las dependencias. ¡Muy importante para evitar problemas!)
+
+    tsconfig.json (y los otros tsconfig.*.json) (Configuración de TypeScript)
+
+    public/ (Si la tienes, contiene assets públicos)
+
+    README.md (Opcional, pero buena práctica)
+
+    Cualquier otro archivo de configuración que tengas en la raíz, como .editorconfig o .browserslistrc.
+
+Paso 2: Archivos y Carpetas que NUNCA debes incluir
+
+Asegúrate de NO seleccionar estas carpetas al crear el ZIP:
+
+    node_modules/ (Esta es la carpeta más pesada y se regenera con npm install)
+
+    dist/ (Esta carpeta contiene los archivos de producción y se regenera con ng build)
+
+    .angular/ (Es una carpeta de caché que Angular CLI crea y gestiona automáticamente)
+
+Resumen Visual
+code Code
+
+    
+tu-proyecto/
+├── .angular/             ❌ NO INCLUIR
+├── node_modules/         ❌ NO INCLUIR
+├── dist/                 ❌ NO INCLUIR (si existe)
+├── public/               ✅ INCLUIR
+├── src/                  ✅ INCLUIR
+├── .editorconfig         ✅ INCLUIR
+├── angular.json          ✅ INCLUIR
+├── package-lock.json     ✅ INCLUIR
+├── package.json          ✅ INCLUIR
+├── README.md             ✅ INCLUIR
+└── tsconfig.json         ✅ INCLUIR
+└── ... (otros tsconfig)  ✅ INCLUIR
+
+  
+
+Paso 3: Cómo correrlo en la otra PC
+
+    Descomprime el archivo .zip en la nueva computadora.
+
+    Abre una terminal o línea de comandos y navega hasta la carpeta del proyecto descomprimido.
+
+    Ejecuta el comando para instalar las dependencias:
+    code Bash
+
+    
+npm install
+
+  
+
+Este comando leerá el archivo package.json y package-lock.json y descargará todas las librerías necesarias, creando la carpeta node_modules desde cero.
+
+Levanta el servidor de desarrollo:
+code Bash
+
+    
+ng serve -o
+
+  
+
+¡Y listo! El proyecto funcionará exactamente igual que en la PC original.
