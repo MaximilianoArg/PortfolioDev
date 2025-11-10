@@ -39,10 +39,10 @@
             <!-- Parte Derecha: Detalles Numéricos -->
             <div class="w-full sm:w-auto text-left sm:text-right">
               <p class="font-bold text-lg text-gray-900">
-                {{ calculateTotalValue(tx) | currency:'USD' }}
+                {{ calculateTotalValue(tx) | currency:'ARS' }}
               </p>
               <p class="text-sm text-gray-500">
-                {{ tx.quantity }} unidades a {{ tx.pricePerUnit | currency:'USD' }}
+                {{ tx.quantity }} unidades a {{ tx.pricePerUnit | currency:'ARS' }}
               </p>
             </div>
 

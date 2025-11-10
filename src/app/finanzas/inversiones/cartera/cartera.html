@@ -18,13 +18,13 @@
     <!-- Valor Total -->
     <div class="bg-white p-6 rounded-xl shadow-md">
       <h2 class="text-gray-500 font-semibold">Valor Total de la Cartera</h2>
-      <p class="text-3xl font-bold text-blue-600 mt-2">{{ summary.totalValue | currency:'USD' }}</p>
+      <p class="text-3xl font-bold text-blue-600 mt-2">{{ summary.totalValue | currency:'ARS' }}</p>
     </div>
     <!-- G/P en $ -->
     <div class="bg-white p-6 rounded-xl shadow-md">
       <h2 class="text-gray-500 font-semibold">Ganancia / Pérdida Total</h2>
       <p class="text-3xl font-bold mt-2" [ngClass]="summary.totalGainLoss >= 0 ? 'text-green-500' : 'text-red-500'">
-        {{ summary.totalGainLoss >= 0 ? '+' : '' }}{{ summary.totalGainLoss | currency:'USD' }}
+        {{ summary.totalGainLoss >= 0 ? '+' : '' }}{{ summary.totalGainLoss | currency:'ARS' }}
       </p>
     </div>
     <!-- G/P en % -->
@@ -51,7 +51,7 @@
       [showXAxisLabel]="true"
       [showYAxisLabel]="true"
       xAxisLabel="Fecha"
-      yAxisLabel="Valor (USD)"
+      yAxisLabel="Valor (ARS)"
       [timeline]="true">
     </ngx-charts-line-chart>
   </div>
@@ -86,12 +86,12 @@
             <!-- Cantidad -->
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700">{{ asset.quantity }}</td>
             <!-- Precio Actual -->
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700">{{ asset.currentPrice | currency:'USD' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700">{{ asset.currentPrice | currency:'ARS' }}</td>
             <!-- Valor Total -->
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">{{ calculateCurrentValue(asset) | currency:'USD' }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">{{ calculateCurrentValue(asset) | currency:'ARS' }}</td>
             <!-- Ganancia / Pérdida -->
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold" [ngClass]="calculateGainLoss(asset) >= 0 ? 'text-green-600' : 'text-red-600'">
-              {{ calculateGainLoss(asset) | currency:'USD' }}
+              {{ calculateGainLoss(asset) | currency:'ARS' }}
               <span class="block text-xs font-normal">({{ calculateGainLossPercentage(asset) | percent:'1.2-2' }})</span>
             </td>
           </tr>
