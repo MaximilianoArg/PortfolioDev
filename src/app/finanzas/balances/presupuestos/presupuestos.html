@@ -1,1 +1,95 @@
 <p>presupuestos works!</p>
+<!-- Contenedor principal con fondo claro y padding -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- 1. Cabecera con título -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
+      Gestión de Presupuestos
+    </h1>
+    <p class="text-gray-500 mt-1">Planifica y sigue tus metas financieras para el mes.</p>
+  </div>
+
+  <!-- 2. Tarjeta de Resumen General -->
+  <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
+      <!-- Presupuesto Total -->
+      <div class="text-center py-4 md:py-0">
+        <h2 class="text-gray-500 font-semibold">Presupuesto Total</h2>
+        <p class="text-3xl font-bold text-gray-800 mt-2">{{ totalBudgeted | currency:'ARS' }}</p>
+      </div>
+      <!-- Gastado -->
+      <div class="text-center py-4 md:py-0">
+        <h2 class="text-gray-500 font-semibold">Gastado</h2>
+        <p class="text-3xl font-bold text-red-500 mt-2">{{ totalSpent | currency:'ARS' }}</p>
+      </div>
+      <!-- Restante -->
+      <div class="text-center py-4 md:py-0">
+        <h2 class="text-gray-500 font-semibold">Restante</h2>
+        <p class="text-3xl font-bold text-green-500 mt-2">{{ totalRemaining | currency:'ARS' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Desglose de Presupuestos por Categoría -->
+  <div class="bg-white p-6 rounded-xl shadow-md">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Desglose por Categoría</h3>
+    <div class="space-y-4">
+
+      @for(item of budgetItems; track item.id) {
+        <!-- Item de Presupuesto Individual - Hacemos que sea clickeable para editar -->
+        <div (click)="openEditModal(item)" class="p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+          <div class="flex items-center justify-between mb-2">
+            <!-- Icono y Nombre -->
+            <div class="flex items-center gap-4">
+              <span class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600">
+                <i [class]="item.icon"></i>
+              </span>
+              <span class="font-bold text-gray-700">{{ item.name }}</span>
+            </div>
+            <!-- Cifras: Gastado / Presupuestado -->
+            <div class="text-right">
+              <p class="font-semibold text-gray-700">{{ item.spentAmount | currency:'ARS' }} / {{ item.budgetedAmount | currency:'ARS' }}</p>
+              @let remaining = item.budgetedAmount - item.spentAmount;
+              <p class="text-sm font-bold" [ngClass]="remaining >= 0 ? 'text-green-600' : 'text-red-600'">
+                {{ remaining >= 0 ? 'Quedan ' : 'Excedido ' }} {{ remaining | abs | currency:'ARS' }}
+              </p>
+            </div>
+          </div>
+          <!-- Barra de Progreso -->
+          @let progress = calculateProgress(item.spentAmount, item.budgetedAmount);
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="h-2 rounded-full" 
+                 [style.width.%]="progress"
+                 [ngClass]="getProgressColor(progress)">
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <p class="text-gray-500 text-center py-4">No has definido ningún presupuesto.</p>
+      }
+
+    </div>
+  </div>
+</div>
+
+<!-- 4. Modal para Editar Presupuesto -->
+@if (isModalOpen && selectedBudget) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeModal()">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm mx-4" (click)="$event.stopPropagation()">
+      <h2 class="text-2xl font-bold mb-2">Editar Presupuesto</h2>
+      <p class="text-gray-500 mb-6">Para la categoría <span class="font-bold">{{ selectedBudget.name }}</span></p>
+      
+      <div>
+        <label for="budgetAmount" class="block mb-1 text-sm font-medium text-gray-700">Nuevo Monto del Presupuesto (€)</label>
+        <input id="budgetAmount" name="budgetAmount" type="number" [(ngModel)]="editedAmount"
+               class="w-full p-3 text-lg border border-gray-300 rounded-lg text-center font-bold">
+      </div>
+
+      <div class="flex justify-end gap-4 mt-8">
+        <button (click)="closeModal()" class="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancelar</button>
+        <button (click)="saveBudget()" class="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+}
