@@ -1,1 +1,62 @@
-<p>historial works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- Cabecera -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Historial de Transacciones</h1>
+    <p class="text-gray-500 mt-1">Tu registro completo de todas las operaciones de inversión.</p>
+  </div>
+
+  <!-- Contenedor de la lista de transacciones -->
+  <div class="bg-white rounded-xl shadow-md">
+    <div class="p-4 sm:p-6">
+      
+      <!-- Bucle para mostrar cada transacción -->
+      <div class="space-y-6">
+        @for (tx of transactions; track tx.id) {
+          <!-- Tarjeta de Transacción Individual -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg border border-gray-200 hover:bg-gray-50">
+            
+            <!-- Parte Izquierda: Icono y Detalles del Activo -->
+            <div class="flex items-center gap-4">
+              <!-- Icono de Compra/Venta -->
+              <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
+                   [ngClass]="tx.type === 'buy' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'">
+                <i class="fas" [ngClass]="tx.type === 'buy' ? 'fa-plus' : 'fa-minus'"></i>
+              </div>
+              
+              <!-- Detalles de la Transacción -->
+              <div>
+                <p class="font-bold text-lg text-gray-800 capitalize">
+                  {{ tx.type === 'buy' ? 'Compra' : 'Venta' }} de {{ tx.assetName }} ({{ tx.assetTicker }})
+                </p>
+                <p class="text-sm text-gray-500">
+                  {{ tx.date | date:'dd MMMM yyyy' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Parte Derecha: Detalles Numéricos -->
+            <div class="w-full sm:w-auto text-left sm:text-right">
+              <p class="font-bold text-lg text-gray-900">
+                {{ calculateTotalValue(tx) | currency:'USD' }}
+              </p>
+              <p class="text-sm text-gray-500">
+                {{ tx.quantity }} unidades a {{ tx.pricePerUnit | currency:'USD' }}
+              </p>
+            </div>
+
+          </div>
+        } @empty {
+          <!-- Mensaje para cuando no hay transacciones -->
+          <div class="text-center py-12">
+            <i class="fas fa-history text-4xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-700">Sin Transacciones</h3>
+            <p class="text-gray-500 mt-1">Tu historial de operaciones aparecerá aquí.</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+</div>
