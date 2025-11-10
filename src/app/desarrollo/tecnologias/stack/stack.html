@@ -1,1 +1,43 @@
-<p>stack works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- Cabecera -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Stack Tecnológico</h1>
+    <p class="text-gray-500 mt-1">Un resumen de las tecnologías y herramientas con las que trabajo.</p>
+  </div>
+
+  <!-- Contenedor de las categorías del stack -->
+  <div class="space-y-12">
+    
+    <!-- Bucle para cada categoría (Frontend, Backend, etc.) -->
+    @for(category of groupedStack.keys(); track category) {
+      <section>
+        <!-- Título de la Categoría -->
+        <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-6">
+          {{ category }}
+        </h2>
+        
+        <!-- Rejilla (Grid) de Tarjetas de Tecnología -->
+        @let techs = groupedStack.get(category) || [];
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          
+          <!-- Bucle para cada tecnología dentro de la categoría -->
+          @for(tech of techs; track tech.name) {
+            <!-- Tarjeta de Tecnología Individual -->
+            <div class="bg-white p-6 rounded-xl shadow-md flex flex-col items-center text-center hover:shadow-lg hover:-translate-y-1 transition-all">
+              <i [class]="tech.icon" class="text-5xl text-gray-500 mb-4"></i>
+              <h3 class="font-bold text-gray-900">{{ tech.name }}</h3>
+              <span class="mt-2 text-xs font-semibold inline-block py-1 px-3 uppercase rounded-full"
+                    [ngClass]="getProficiencyClass(tech.proficiency)">
+                {{ tech.proficiency }}
+              </span>
+            </div>
+          }
+
+        </div>
+      </section>
+    }
+
+  </div>
+</div>
