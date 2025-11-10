@@ -1,1 +1,56 @@
-<p>recursos works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- Cabecera -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Recursos para Desarrolladores</h1>
+    <p class="text-gray-500 mt-1">Mi colección personal de herramientas, documentación y artículos útiles.</p>
+  </div>
+  
+  <!-- Panel de Filtros -->
+  <div class="mb-8 flex items-center gap-4">
+    <label for="category-filter" class="font-semibold text-gray-700">Filtrar por categoría:</label>
+    <select id="category-filter" [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()"
+            class="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+      @for(cat of availableCategories; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- Rejilla (Grid) de Recursos -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    
+    @for(resource of filteredResources; track resource.id) {
+      <!-- Tarjeta de Recurso Individual -->
+      <a [href]="resource.url" target="_blank" rel="noopener noreferrer" 
+         class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all">
+        
+        <!-- Icono -->
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-500 mb-4">
+          <i [class]="resource.icon" class="text-2xl"></i>
+        </div>
+        
+        <!-- Título -->
+        <h3 class="font-bold text-lg text-gray-900">{{ resource.title }}</h3>
+        
+        <!-- Descripción -->
+        <p class="text-sm text-gray-600 mt-1">{{ resource.description }}</p>
+        
+        <!-- Categoría (Píldora) -->
+        <div class="mt-4">
+          <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-gray-200 text-gray-700">
+            {{ resource.category }}
+          </span>
+        </div>
+      </a>
+    } @empty {
+      <div class="text-gray-500 text-center py-12 sm:col-span-2 lg:col-span-3 xl:col-span-4">
+        <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-bold">No se encontraron recursos</h3>
+        <p>No hay recursos que coincidan con la categoría seleccionada.</p>
+      </div>
+    }
+    
+  </div>
+</div>
