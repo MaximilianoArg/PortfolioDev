@@ -1,1 +1,105 @@
-<p>mensual works!</p>
+<!-- Contenedor principal con un fondo claro y padding -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- 1. Cabecera con Selector de Fecha -->
+  <div class="flex items-center justify-between mb-8">
+    <button (click)="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+      <i class="fas fa-chevron-left text-gray-600"></i>
+    </button>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 capitalize">
+      {{ currentDate | date:'MMMM yyyy' }}
+    </h1>
+    <button (click)="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+      <i class="fas fa-chevron-right text-gray-600"></i>
+    </button>
+  </div>
+
+  <!-- 2. Tarjetas de KPIs (Indicadores Clave) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Ingresos -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-gray-500 font-semibold">Ingresos Totales</h2>
+      <p class="text-3xl font-bold text-green-500 mt-2">{{ kpiData.income | currency:'ARS':'symbol' }}</p>
+    </div>
+    <!-- Gastos -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-gray-500 font-semibold">Gastos Totales</h2>
+      <p class="text-3xl font-bold text-red-500 mt-2">{{ kpiData.expenses | currency:'ARS':'symbol' }}</p>
+    </div>
+    <!-- Balance -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-gray-500 font-semibold">Balance del Mes</h2>
+      <p class="text-3xl font-bold mt-2" [ngClass]="kpiData.balance >= 0 ? 'text-blue-500' : 'text-red-500'">
+        {{ kpiData.balance | currency:'ARS':'symbol' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- 3. Contenedor principal para Gráfico y Transacciones -->
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+    
+    <!-- Columna Izquierda: Gráfico de Gastos -->
+    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-md">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Gastos por Categoría</h3>
+    <div class="h-80">
+        <ngx-charts-pie-chart
+        [results]="categoryChartData"
+        [doughnut]="true"
+        [legend]="true"
+        [legendPosition]="legendPosition"
+        [labels]="true"
+        [arcWidth]="0.25">
+        </ngx-charts-pie-chart>
+    </div>
+    </div>
+
+    <!-- Columna Derecha: Transacciones Recientes -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Transacciones Recientes</h3>
+      <div class="space-y-4">
+        @for(tx of recentTransactions; track tx.id) {
+          <div class="flex items-center justify-between py-2 border-b last:border-b-0">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600">
+                <i [class]="tx.categoryIcon"></i>
+              </span>
+              <div>
+                <p class="font-semibold text-gray-700">{{ tx.description }}</p>
+                <p class="text-sm text-gray-500">{{ tx.date | date:'dd/MM' }}</p>
+              </div>
+            </div>
+            <p class="font-bold" [ngClass]="tx.type === 'income' ? 'text-green-500' : 'text-red-500'">
+              {{ (tx.type === 'income' ? '+' : '-') + (tx.amount | currency:'EUR':'') }}
+            </p>
+          </div>
+        } @empty {
+          <p class="text-gray-500 text-center py-4">No hay transacciones este mes.</p>
+        }
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 4. Botón de Acción Flotante (FAB) -->
+<button (click)="openAddTransactionModal()" title="Añadir Transacción"
+  class="fixed bottom-6 right-6 w-14 h-14 bg-sidebar-dark text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+  <i class="fas fa-plus text-2xl"></i>
+</button>
+
+<!-- 5. Modal para Añadir Transacción (oculto por defecto) -->
+@if (isModalOpen) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeAddTransactionModal()">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4" (click)="$event.stopPropagation()">
+      <h2 class="text-2xl font-bold mb-6">Nueva Transacción</h2>
+      
+      <!-- Aquí iría tu formulario para añadir una transacción -->
+      <p class="text-gray-600 mb-6">El formulario para añadir un nuevo ingreso o gasto iría aquí.</p>
+
+      <div class="flex justify-end gap-4">
+        <button (click)="closeAddTransactionModal()" class="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancelar</button>
+        <button class="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600">Guardar</button>
+      </div>
+    </div>
+  </div>
+}
