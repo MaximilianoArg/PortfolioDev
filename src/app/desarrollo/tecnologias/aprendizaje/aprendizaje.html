@@ -1,1 +1,74 @@
-<p>aprendizaje works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- Cabecera -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Rutas de Aprendizaje</h1>
+    <p class="text-gray-500 mt-1">Mis planes de estudio estructurados para adquirir nuevas habilidades.</p>
+  </div>
+  
+  <!-- Contenedor de las Rutas de Aprendizaje -->
+  <div class="space-y-12">
+    @for(path of learningPaths; track path.id) {
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <!-- Cabecera de la Ruta -->
+        <div class="border-b pb-4 mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">{{ path.title }}</h2>
+          <p class="text-gray-600 mt-1">{{ path.goal }}</p>
+        </div>
+
+        <!-- Línea de Tiempo Vertical de las Etapas -->
+        <div class="relative pl-6">
+          <!-- La línea vertical de la timeline -->
+          <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+          <div class="space-y-8">
+            @for(stage of path.stages; track stage.id) {
+              <!-- Un item en la línea de tiempo -->
+              <div class="relative">
+                <!-- El círculo en la línea -->
+                <div class="absolute -left-[30px] top-1 w-5 h-5 rounded-full z-10" [ngClass]="getStatusClass(stage.status)"></div>
+
+                <!-- Contenido de la etapa -->
+                <div class="ml-4">
+                  <h3 class="font-bold text-lg text-gray-900">{{ stage.title }}
+                    <span class="ml-2 text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full" 
+                          [ngClass]="{
+                            'bg-green-100 text-green-800': stage.status === 'Completado',
+                            'bg-blue-100 text-blue-800': stage.status === 'En Progreso',
+                            'bg-gray-100 text-gray-800': stage.status === 'Pendiente'
+                          }">
+                      {{ stage.status }}
+                    </span>
+                  </h3>
+                  <p class="text-gray-600 text-sm mt-1">{{ stage.description }}</p>
+                  
+                  <!-- Recursos de la etapa -->
+                  <div class="mt-4 space-y-2">
+                    <h4 class="font-semibold text-gray-700">Recursos Clave:</h4>
+                    <ul class="list-none pl-2">
+                      @for(resource of stage.resources; track resource.id) {
+                        <li class="flex items-center gap-3 text-sm">
+                          <i [class]="getResourceIcon(resource.type)" class="text-gray-400 w-4 text-center"></i>
+                          @if(resource.url) {
+                            <a [href]="resource.url" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+                              {{ resource.title }} ({{ resource.type }}) <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                          } @else {
+                            <span class="text-gray-700">{{ resource.title }} ({{ resource.type }})</span>
+                          }
+                        </li>
+                      } @empty {
+                        <p class="text-sm text-gray-500 pl-2">Recursos por definir.</p>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
