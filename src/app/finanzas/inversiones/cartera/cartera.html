@@ -1,1 +1,120 @@
-<p>cartera works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- Cabecera -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Cartera de Inversiones</h1>
+      <p class="text-gray-500 mt-1">Tu resumen de activos y rendimiento.</p>
+    </div>
+    <button (click)="openModal()" class="flex items-center gap-2 px-4 py-2 bg-sidebar-dark text-white rounded-lg shadow hover:bg-opacity-90 transition-colors">
+      <i class="fas fa-plus"></i>
+      <span>Añadir Activo</span>
+    </button>
+  </div>
+
+  <!-- 1. KPIs (Indicadores Clave) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Valor Total -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-gray-500 font-semibold">Valor Total de la Cartera</h2>
+      <p class="text-3xl font-bold text-blue-600 mt-2">{{ summary.totalValue | currency:'USD' }}</p>
+    </div>
+    <!-- G/P en $ -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-gray-500 font-semibold">Ganancia / Pérdida Total</h2>
+      <p class="text-3xl font-bold mt-2" [ngClass]="summary.totalGainLoss >= 0 ? 'text-green-500' : 'text-red-500'">
+        {{ summary.totalGainLoss >= 0 ? '+' : '' }}{{ summary.totalGainLoss | currency:'USD' }}
+      </p>
+    </div>
+    <!-- G/P en % -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-gray-500 font-semibold">Rendimiento Total</h2>
+      <p class="text-3xl font-bold mt-2" [ngClass]="summary.totalGainLossPercentage >= 0 ? 'text-green-500' : 'text-red-500'">
+        {{ summary.totalGainLossPercentage | percent:'1.2-2' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- 2. Gráfico y Lista de Activos -->
+  <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
+    <!-- Gráfico Histórico -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+  <h3 class="text-xl font-bold text-gray-800 mb-4">Evolución de la Cartera</h3>
+  <div class="h-96">
+    <ngx-charts-line-chart
+      [results]="portfolioHistory"
+      [scheme]="colorScheme"
+      [legend]="false"
+      [xAxis]="true"
+      [yAxis]="true"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      xAxisLabel="Fecha"
+      yAxisLabel="Valor (USD)"
+      [timeline]="true">
+    </ngx-charts-line-chart>
+  </div>
+</div>
+  </div>
+
+  <!-- 3. Tabla de Activos -->
+  <div class="bg-white rounded-xl shadow-md overflow-x-auto mt-8">
+    <table class="w-full text-left">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Activo</th>
+          <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Cantidad</th>
+          <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Precio Actual</th>
+          <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Valor Total</th>
+          <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">G/P (%)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        @for(asset of assets; track asset.id) {
+          <tr class="hover:bg-gray-50">
+            <!-- Nombre del Activo -->
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-4">
+                <img [src]="asset.logoUrl" [alt]="asset.name" class="w-8 h-8 rounded-full" onError="this.style.display='none'">
+                <div>
+                  <p class="font-bold text-gray-900">{{ asset.name }}</p>
+                  <p class="text-sm text-gray-500">{{ asset.ticker }}</p>
+                </div>
+              </div>
+            </td>
+            <!-- Cantidad -->
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700">{{ asset.quantity }}</td>
+            <!-- Precio Actual -->
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700">{{ asset.currentPrice | currency:'USD' }}</td>
+            <!-- Valor Total -->
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">{{ calculateCurrentValue(asset) | currency:'USD' }}</td>
+            <!-- Ganancia / Pérdida -->
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold" [ngClass]="calculateGainLoss(asset) >= 0 ? 'text-green-600' : 'text-red-600'">
+              {{ calculateGainLoss(asset) | currency:'USD' }}
+              <span class="block text-xs font-normal">({{ calculateGainLossPercentage(asset) | percent:'1.2-2' }})</span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="text-center py-8 text-gray-500">Aún no tienes activos en tu cartera. ¡Añade el primero!</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para Añadir Activo -->
+@if (isModalOpen) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeModal()">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4" (click)="$event.stopPropagation()">
+      <h2 class="text-2xl font-bold mb-6">Añadir Activo</h2>
+      <p class="text-gray-600 mb-6">El formulario para registrar una nueva compra de un activo iría aquí.</p>
+      <div class="flex justify-end gap-4">
+        <button (click)="closeModal()" class="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancelar</button>
+        <button class="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600">Guardar</button>
+      </div>
+    </div>
+  </div>
+}
