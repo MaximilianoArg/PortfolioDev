@@ -1,1 +1,88 @@
-<p>categorias works!</p>
+<!-- Contenedor principal con fondo claro y padding -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- 1. Cabecera con título y botón de acción -->
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
+      Categorías de Gasto
+    </h1>
+    <button (click)="openAddModal()" class="flex items-center gap-2 px-4 py-2 bg-sidebar-dark text-white rounded-lg shadow hover:bg-opacity-90 transition-colors">
+      <i class="fas fa-plus"></i>
+      <span>Añadir Categoría</span>
+    </button>
+  </div>
+
+  <!-- 2. Rejilla (Grid) de categorías -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    
+    @for(category of categories; track category.id) {
+    <!-- Tarjeta de Categoría -->
+    <div (click)="viewCategoryDetails(category)" class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
+        
+        <!-- ... (Sección Superior: sin cambios) ... -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-500 text-xl">
+              <i [class]="category.icon"></i>
+            </span>
+            <div>
+              <h3 class="text-lg font-bold text-gray-800">{{ category.name }}</h3>
+              <p class="text-sm text-gray-500">Gastado / Presupuesto</p>
+            </div>
+          </div>
+          <button (click)="openEditModal(category, $event)" title="Editar Categoría" class="p-2 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100">
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+        </div>
+        
+        <!-- ... (Sección de Cifras: sin cambios) ... -->
+        <div class="flex items-baseline justify-between mb-2">
+          <p class="text-2xl font-bold text-gray-700">{{ category.spentAmount | currency:'ARS' }}</p>
+          <p class="text-md font-medium text-gray-400">{{ category.budgetedAmount | currency:'ARS' }}</p>
+        </div>
+
+        <!-- Barra de Progreso -->
+        
+        <!-- CORRECCIÓN #1: Añadido punto y coma (;) al final -->
+        @let progress = calculateProgress(category.spentAmount, category.budgetedAmount);
+
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="h-2.5 rounded-full" 
+                [style.width.%]="progress"
+                [ngClass]="getProgressColor(progress)">
+            </div>
+            <!-- CORRECCIÓN #2: Se ha eliminado un </div> extra que estaba aquí -->
+        </div>
+
+    </div> <!-- Este es el div de cierre de la tarjeta -->
+    } @empty {
+      <p class="text-gray-500 text-center py-4 md:col-span-2 lg:col-span-3">No hay categorías para mostrar. ¡Añade una!</p>
+    }
+
+</div>
+
+<!-- 3. Modal para Añadir/Editar Categoría -->
+@if (isModalOpen) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeModal()">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4" (click)="$event.stopPropagation()">
+      <h2 class="text-2xl font-bold mb-6">{{ modalMode === 'add' ? 'Nueva' : 'Editar' }} Categoría</h2>
+      
+      <!-- Aquí iría un ReactiveForm para una mejor gestión del formulario -->
+      <div class="space-y-4">
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Nombre de la Categoría</label>
+          <input type="text" [value]="selectedCategory?.name || ''" class="w-full p-2 border border-gray-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Monto del Presupuesto</label>
+          <input type="number" [value]="selectedCategory?.budgetedAmount || ''" class="w-full p-2 border border-gray-300 rounded-lg">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-4 mt-8">
+        <button (click)="closeModal()" class="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancelar</button>
+        <button (click)="saveCategory()" class="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600">Guardar</button>
+      </div>
+    </div>
+  </div>
+}
