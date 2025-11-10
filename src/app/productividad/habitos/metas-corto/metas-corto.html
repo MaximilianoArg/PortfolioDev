@@ -1,1 +1,82 @@
-<p>metas-corto works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+  
+  <!-- Cabecera -->
+  <div class="mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Metas a Corto Plazo</h1>
+    <p class="text-gray-500 mt-1">Organiza tus objetivos semanales o mensuales en este tablero.</p>
+  </div>
+
+  <!-- Barra de Progreso General -->
+  <div class="mb-8">
+    @let progress = calculateProgressPercentage();
+    <div class="flex justify-between mb-1">
+      <span class="text-base font-medium text-blue-700">Progreso Total</span>
+      <span class="text-sm font-medium text-blue-700">{{ progress | number:'1.0-0' }}%</span>
+    </div>
+    <div class="w-full bg-gray-200 rounded-full h-2.5">
+      <div class="bg-blue-600 h-2.5 rounded-full" [style.width.%]="progress"></div>
+    </div>
+  </div>
+
+  <!-- Contenedor del Tablero Kanban -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6" cdkDropListGroup>
+    
+    <!-- Columna: Por Hacer (To Do) -->
+    <div class="bg-gray-100 rounded-lg p-4">
+      <h3 class="font-bold text-gray-800 mb-4">📝 Por Hacer ({{ todoGoals.length }})</h3>
+      <div id="todo" cdkDropList [cdkDropListData]="todoGoals" (cdkDropListDropped)="drop($event)" class="min-h-[200px] space-y-4">
+        @for(goal of todoGoals; track goal.id) {
+          <div cdkDrag class="bg-white p-4 rounded-lg shadow cursor-grab active:cursor-grabbing">
+            <h4 class="font-semibold">{{ goal.title }}</h4>
+            <p class="text-sm text-gray-500 mt-1">{{ goal.description }}</p>
+            <p class="text-xs text-right text-gray-400 mt-2">Vence: {{ goal.dueDate | date:'dd MMM' }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Columna: En Progreso (In Progress) -->
+    <div class="bg-gray-100 rounded-lg p-4">
+      <h3 class="font-bold text-gray-800 mb-4">🚀 En Progreso ({{ inProgressGoals.length }})</h3>
+      <div id="inProgress" cdkDropList [cdkDropListData]="inProgressGoals" (cdkDropListDropped)="drop($event)" class="min-h-[200px] space-y-4">
+        @for(goal of inProgressGoals; track goal.id) {
+          <div cdkDrag class="bg-white p-4 rounded-lg shadow cursor-grab active:cursor-grabbing">
+            <h4 class="font-semibold">{{ goal.title }}</h4>
+            <p class="text-sm text-gray-500 mt-1">{{ goal.description }}</p>
+            <p class="text-xs text-right text-gray-400 mt-2">Vence: {{ goal.dueDate | date:'dd MMM' }}</p>
+          </div>
+        }
+      </div>
+    </div>
+    
+    <!-- Columna: Completado (Done) -->
+    <div class="bg-gray-100 rounded-lg p-4">
+      <h3 class="font-bold text-gray-800 mb-4">✅ Completado ({{ doneGoals.length }})</h3>
+      <div id="done" cdkDropList [cdkDropListData]="doneGoals" (cdkDropListDropped)="drop($event)" class="min-h-[200px] space-y-4">
+        @for(goal of doneGoals; track goal.id) {
+          <div cdkDrag class="bg-white p-4 rounded-lg shadow cursor-grab active:cursor-grabbing opacity-70">
+            <h4 class="font-semibold line-through">{{ goal.title }}</h4>
+            <p class="text-sm text-gray-500 mt-1">{{ goal.description }}</p>
+            <p class="text-xs text-right text-gray-400 mt-2">Completado</p>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal para Añadir/Editar Meta -->
+@if (isModalOpen) {
+  <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" (click)="closeModal()">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md mx-4" (click)="$event.stopPropagation()">
+      <h2 class="text-2xl font-bold mb-6">Nueva Meta</h2>
+      <p class="text-gray-600 mb-6">El formulario para añadir una nueva meta a corto plazo iría aquí.</p>
+      <div class="flex justify-end gap-4">
+        <button (click)="closeModal()" class="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancelar</button>
+        <button class="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600">Guardar</button>
+      </div>
+    </div>
+  </div>
+}
