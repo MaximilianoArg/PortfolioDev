@@ -1,1 +1,83 @@
 <p>riesgo works!</p>
+<!-- Contenedor principal -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen space-y-8">
+  
+  <!-- Cabecera -->
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Análisis de Riesgo de la Cartera</h1>
+    <p class="text-gray-500 mt-1">Entiende la composición y los riesgos de tus inversiones.</p>
+  </div>
+
+  <!-- 1. Perfil de Riesgo General -->
+  <div class="bg-white p-6 rounded-xl shadow-md">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">Tu Perfil de Riesgo Actual</h3>
+    <div class="text-center">
+      <p class="text-5xl font-extrabold" [ngClass]="{'text-red-500': riskLevel > 75, 'text-yellow-500': riskLevel > 25 && riskLevel <= 75, 'text-green-500': riskLevel <= 25}">
+        {{ riskProfile }}
+      </p>
+      <div class="w-full bg-gray-200 rounded-full h-4 mt-4">
+        <div class="h-4 rounded-full" 
+             [style.width.%]="riskLevel"
+             [ngClass]="{'bg-red-500': riskLevel > 75, 'bg-yellow-500': riskLevel > 25 && riskLevel <= 75, 'bg-green-500': riskLevel <= 25}">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Gráficos de Distribución -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Distribución de Activos -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Distribución por Activo</h3>
+      <div class="h-80">
+        <ngx-charts-advanced-pie-chart
+          [results]="assetAllocationData"
+          [gradient]="true">
+        </ngx-charts-advanced-pie-chart>
+      </div>
+    </div>
+    <!-- Distribución por Sector -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Distribución por Sector</h3>
+      <div class="h-80">
+        <ngx-charts-advanced-pie-chart
+          [results]="sectorAllocationData"
+          [gradient]="true">
+        </ngx-charts-advanced-pie-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Factores de Riesgo y Recomendaciones -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Factores Clave -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Factores de Riesgo Clave</h3>
+      <div class="space-y-4">
+        @for(factor of riskFactors; track factor.title) {
+          <div class="flex items-start gap-4">
+            <span class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full" [ngClass]="getRiskFactorColor(factor.level)">
+              <i class="fas" [ngClass]="{'fa-exclamation-triangle': factor.level !== 'low', 'fa-check-circle': factor.level === 'low'}"></i>
+            </span>
+            <div>
+              <h4 class="font-semibold text-gray-800">{{ factor.title }}</h4>
+              <p class="text-sm text-gray-600">{{ factor.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <!-- Siguientes Pasos Recomendados -->
+    <div class="bg-white p-6 rounded-xl shadow-md">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Siguientes Pasos Recomendados</h3>
+      <ul class="space-y-3">
+        @for(rec of recommendations; track rec) {
+          <li class="flex items-start gap-3">
+            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+            <span class="text-gray-700">{{ rec }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>
