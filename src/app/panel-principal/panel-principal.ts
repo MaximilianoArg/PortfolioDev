@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BarraLateral } from "../barra-lateral/barra-lateral";
+import { Autenticacion } from '../servicio/autenticacion';
+import { UserProfile } from '../servicio/auth.interfaces';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-panel-principal',
@@ -13,6 +16,8 @@ import { BarraLateral } from "../barra-lateral/barra-lateral";
 
 export class PanelPrincipal {
   estaColapsado = false;
+  private servicioAutenticacion = inject(Autenticacion);
+  public currentUser$: Observable<UserProfile | null> = this.servicioAutenticacion.currentUser$;
   constructor() {}
   
   ngOnInit(){}

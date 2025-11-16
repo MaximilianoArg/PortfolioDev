@@ -1,7 +1,12 @@
 <div class="sidebar" [ngClass]="{ 'sidebar-collapsed': estaColapsado }">
   <div class="sidebar-header">
     <a href="#" (click)="presionarBarraLateral(); $event.preventDefault()" class="sidebar-logo">
-      {{ estaColapsado ? 'LM' : 'Leiva Maximiliano' }}
+      <ng-container *ngIf="userProfile as user; else cargandoNombre">
+        {{ estaColapsado ? (user.profile.first_name[0] + user.profile.last_name[0]) : (user.profile.first_name + ' ' + user.profile.last_name) }}
+      </ng-container>
+      <ng-template #cargandoNombre>
+        {{ estaColapsado ? '...' : 'Cargando...' }}
+      </ng-template>
     </a>
   </div>
   <div class="sidebar-menu">

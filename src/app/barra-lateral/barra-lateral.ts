@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, EventEmitter, Input, Output  } from '@angular/core';
 import { MenuItem } from '../shared/interfaces/menu-item.interface';
+import { UserProfile } from '../servicio/auth.interfaces';
 
 @Component({
   selector: 'app-barra-lateral',
@@ -11,6 +12,7 @@ import { MenuItem } from '../shared/interfaces/menu-item.interface';
 })
 export class BarraLateral {
   @Input() estaColapsado = false;
+  @Input() userProfile: UserProfile | null = null;
   @Output() lateralSeleccionado = new EventEmitter<void>();
   
   menuItems: MenuItem[] = [

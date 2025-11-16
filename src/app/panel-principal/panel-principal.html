@@ -2,7 +2,8 @@
   <div class="position-relative">
     <app-barra-lateral
       [estaColapsado]="estaColapsado"
-      (lateralSeleccionado)="alHacerClick()">
+      (lateralSeleccionado)="alHacerClick()"
+      [userProfile]="currentUser$ | async">
     </app-barra-lateral>
   </div>
   <main class="content" [ngClass]="{ 'content-expanded': estaColapsado }">
