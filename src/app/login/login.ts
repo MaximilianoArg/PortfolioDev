@@ -19,13 +19,11 @@ export class ComponenteLogueo implements OnInit {
   constructor(private servicioAutenticacion: Autenticacion, private ruteo: Router) {}
 
   ngOnInit(): void {
-    this.datosFormulario = new FormGroup(
-      {
-        usuario: new FormControl("admin"),
-        contra: new FormControl("admin"),
-      }
-    )
-  }
+  this.datosFormulario = new FormGroup({
+    usuario: new FormControl(''),
+    contra: new FormControl(''), 
+  });
+}
 
   onClickSubmit(datos: any)
   {
