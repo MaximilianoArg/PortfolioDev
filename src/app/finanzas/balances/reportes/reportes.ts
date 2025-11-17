@@ -1,21 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core'; // <-- Usamos inject para un código más limpio
+import { TransaccionServicio, Transaccion } from '../../transaccion'; // <-- Asegúrate que la ruta a tu servicio es correcta
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router'; // Para leer parámetros de la URL
+import { ActivatedRoute } from '@angular/router';
 
-// --- Interfaces ---
-interface Transaction {
-  id: number;
-  date: string; // Formato YYYY-MM-DD para facilitar el ordenamiento
-  description: string;
-  category: string;
-  categoryIcon: string;
-  amount: number;
-  type: 'income' | 'expense';
-}
+// La interfaz Transaccion se define en el servicio, aquí la importamos.
 
 interface SortConfig {
-  key: keyof Transaction | null;
+  // Asegúrate que las claves coincidan con la interfaz Transaccion
+  key: keyof Transaccion | null;
   direction: 'asc' | 'desc';
 }
 
@@ -24,27 +17,30 @@ interface SortConfig {
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule // <-- Importante para el panel de filtros
+    ReactiveFormsModule
   ],
   templateUrl: './reportes.html',
   styleUrls: ['./reportes.scss']
 })
 export class ReportesComponente implements OnInit {
 
+  // --- Dependencias ---
+  private route = inject(ActivatedRoute);
+  private transaccionServicio = inject(TransaccionServicio); // <-- 1. Inyectamos el servicio
+
   // --- Propiedades de datos ---
-  allTransactions: Transaction[] = []; // Guarda la lista original sin modificar
-  filteredTransactions: Transaction[] = []; // La lista que se muestra en la tabla
+  allTransactions: Transaccion[] = [];
+  filteredTransactions: Transaccion[] = [];
 
   // --- Propiedades para el formulario de filtros ---
   filterForm: FormGroup;
-  // Para poblar el <select> de categorías
   availableCategories: string[] = ['Vivienda', 'Comida', 'Transporte', 'Ocio', 'Salud', 'Ahorro', 'Ingresos'];
 
   // --- Propiedades para el ordenamiento de la tabla ---
-  sortConfig: SortConfig = { key: 'date', direction: 'desc' };
+  sortConfig: SortConfig = { key: 'fecha', direction: 'desc' };
 
-  constructor(private route: ActivatedRoute) {
-    // Inicializamos el formulario en el constructor
+  constructor() {
+    // La inicialización del formulario se queda igual
     this.filterForm = new FormGroup({
       searchTerm: new FormControl(''),
       category: new FormControl(''),
@@ -55,59 +51,59 @@ export class ReportesComponente implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadTransactions(); // Carga todos los datos
+    this.loadTransactions();
 
-    // Escuchamos los cambios en los filtros para aplicar la lógica en tiempo real
+    // Toda esta lógica de filtros y queryParams se queda EXACTAMENTE IGUAL. ¡Está perfecta!
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFiltersAndSort();
     });
 
-    // Leemos los parámetros de la URL (si venimos de la página de Categorías)
     this.route.queryParams.subscribe(params => {
       if (params['categoria']) {
-        // Buscamos el nombre de la categoría por su ID (simulación)
         const categoryName = this.availableCategories[params['categoria'] - 1] || '';
-        this.filterForm.get('category')?.setValue(categoryName, { emitEvent: false }); // Actualizamos el filtro
-        this.applyFiltersAndSort(); // Aplicamos el filtro inicial
+        this.filterForm.get('category')?.setValue(categoryName, { emitEvent: false });
+        this.applyFiltersAndSort();
       }
     });
   }
 
   loadTransactions(): void {
-    // --- SIMULACIÓN DE LLAMADA A UN SERVICIO ---
-    this.allTransactions = [
-      { id: 1, date: '2025-11-09', description: 'Compra en supermercado', category: 'Comida', categoryIcon: 'fas fa-shopping-cart', amount: 85.40, type: 'expense' },
-      { id: 2, date: '2025-11-01', description: 'Salario Noviembre', category: 'Ingresos', categoryIcon: 'fas fa-briefcase', amount: 5200, type: 'income' },
-      { id: 3, date: '2025-11-05', description: 'Factura de luz', category: 'Vivienda', categoryIcon: 'fas fa-lightbulb', amount: 120.30, type: 'expense' },
-      { id: 4, date: '2025-11-03', description: 'Abono de transporte', category: 'Transporte', categoryIcon: 'fas fa-bus', amount: 54.60, type: 'expense' },
-      { id: 5, date: '2025-10-28', description: 'Cena con amigos', category: 'Ocio', categoryIcon: 'fas fa-film', amount: 45.00, type: 'expense' },
-      { id: 6, date: '2025-10-15', description: 'Reembolso Amazon', category: 'Ingresos', categoryIcon: 'fas fa-undo', amount: 25.50, type: 'income' },
-    ];
-    this.applyFiltersAndSort(); // Aplicamos filtros (ninguno al principio) y ordenamiento inicial
+    // --- 2. REEMPLAZAMOS LA SIMULACIÓN POR LA LLAMADA REAL A LA API ---
+    this.transaccionServicio.obtenerTransacciones().subscribe({
+      next: (data) => {
+        this.allTransactions = data; // Guardamos los datos reales
+        this.applyFiltersAndSort(); // Aplicamos filtros y ordenamiento inicial
+        console.log('Transacciones cargadas desde la API:', this.allTransactions);
+      },
+      error: (err) => console.error('Error al cargar transacciones desde la API:', err)
+    });
   }
 
+  // ¡ESTE MÉTODO NO NECESITA NINGÚN CAMBIO!
+  // Sigue funcionando perfectamente con los datos cargados en 'allTransactions'.
   applyFiltersAndSort(): void {
     const filters = this.filterForm.value;
-    let transactions = [...this.allTransactions]; // Empezamos con una copia de todos los datos
+    let transactions = [...this.allTransactions];
 
-    // Aplicamos cada filtro si tiene un valor
     if (filters.searchTerm) {
-      transactions = transactions.filter(tx => tx.description.toLowerCase().includes(filters.searchTerm.toLowerCase()));
+      transactions = transactions.filter(tx => tx.descripcion.toLowerCase().includes(filters.searchTerm.toLowerCase()));
     }
+    // ... el resto de la lógica de filtros sigue igual ...
     if (filters.category) {
-      transactions = transactions.filter(tx => tx.category === filters.category);
+      transactions = transactions.filter(tx => tx.categoria === filters.category);
     }
+    // OJO: Tu modelo de Django usa 'INCOME'/'EXPENSE'. El mock usaba 'income'/'expense'.
+    // Asegurémonos que el <select> en tu HTML envíe los valores correctos (en mayúsculas).
     if (filters.type) {
-      transactions = transactions.filter(tx => tx.type === filters.type);
+      transactions = transactions.filter(tx => tx.transaccion_tipo === filters.type);
     }
     if (filters.startDate) {
-      transactions = transactions.filter(tx => new Date(tx.date) >= new Date(filters.startDate));
+      transactions = transactions.filter(tx => new Date(tx.fecha) >= new Date(filters.startDate));
     }
     if (filters.endDate) {
-      transactions = transactions.filter(tx => new Date(tx.date) <= new Date(filters.endDate));
+      transactions = transactions.filter(tx => new Date(tx.fecha) <= new Date(filters.endDate));
     }
 
-    // Aplicamos el ordenamiento
     if (this.sortConfig.key) {
       transactions.sort((a, b) => {
         const aValue = a[this.sortConfig.key!];
@@ -123,7 +119,8 @@ export class ReportesComponente implements OnInit {
     this.filteredTransactions = transactions;
   }
 
-  onSort(key: keyof Transaction): void {
+  // Este método tampoco necesita cambios.
+  onSort(key: keyof Transaccion): void {
     if (this.sortConfig.key === key) {
       // Si ya se está ordenando por esta columna, invertimos la dirección
       this.sortConfig.direction = this.sortConfig.direction === 'asc' ? 'desc' : 'asc';
@@ -135,19 +132,32 @@ export class ReportesComponente implements OnInit {
     this.applyFiltersAndSort(); // Re-aplicamos todo con el nuevo orden
   }
 
+  // Este método tampoco necesita cambios.
   resetFilters(): void {
     this.filterForm.reset({
       searchTerm: '', category: '', type: '', startDate: '', endDate: ''
     });
   }
 
-  // Placeholder para las acciones
-  editTransaction(tx: Transaction, event: MouseEvent) { 
+  // --- 3. IMPLEMENTAMOS LAS ACCIONES CRUD REALES ---
+  editTransaction(tx: Transaccion, event: MouseEvent) { 
     event.stopPropagation();
     console.log('Editando:', tx);
+    // AQUÍ iría la lógica para abrir un modal/formulario con los datos de 'tx'
+    // y al guardar, llamarías a `this.transaccionServicio.updateTransaction(...)`
   }
-  deleteTransaction(tx: Transaction, event: MouseEvent) {
+
+  deleteTransaction(tx: Transaccion, event: MouseEvent) {
     event.stopPropagation();
-    console.log('Eliminando:', tx);
+    if (confirm(`¿Estás seguro de que quieres eliminar la transacción "${tx.descripcion}"?`)) {
+      this.transaccionServicio.borrarTransaccion(tx.id).subscribe({
+        next: () => {
+          console.log('Transacción eliminada con éxito.');
+          // Para reflejar el cambio, volvemos a cargar los datos desde el servidor.
+          this.loadTransactions();
+        },
+        error: (err) => console.error('Error al eliminar la transacción:', err)
+      });
+    }
   }
 }
