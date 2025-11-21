@@ -1,0 +1,114 @@
+<div class="detalle-container" *ngIf="account">
+    <div class="header">
+        <a routerLink="/finanzas/cuentas" class="back-link"><i class="fas fa-arrow-left"></i> Volver</a>
+        <h1>{{ account.name }}</h1>
+        <div class="bank-badge" *ngIf="account.bank_name">{{ account.bank_name }}</div>
+    </div>
+
+    <div class="overview-cards">
+        <div class="card balance-card">
+            <h3>Saldo Disponible</h3>
+            <div class="amount">{{ account.currency }} {{ account.balance | number:'1.2-2' }}</div>
+        </div>
+        <div class="card tna-card">
+            <h3>TNA (Tasa Nominal Anual)</h3>
+            <div class="rate">{{ account.tna | number:'1.2-2' }}%</div>
+            <small>Generando rendimientos diarios</small>
+        </div>
+    </div>
+
+    <div class="credits-section">
+        <div class="section-header">
+            <h2>Mis Créditos</h2>
+            <button class="btn-add" (click)="openCreditModal()">
+                <i class="fas fa-plus"></i> Nuevo Crédito
+            </button>
+        </div>
+
+        <div class="credits-list">
+            <div class="credit-item" *ngFor="let credit of credits" [class.paid]="credit.is_paid">
+                <div class="credit-info">
+                    <h4>{{ credit.name }}</h4>
+                    <div class="details">
+                        <span class="total">Total: {{ account.currency }} {{ credit.total_amount | number:'1.2-2'
+                            }}</span>
+                        <span class="remaining" *ngIf="!credit.is_paid">Restante: {{ account.currency }} {{
+                            credit.remaining_amount | number:'1.2-2' }}</span>
+                        <span class="status" *ngIf="credit.is_paid">PAGADO</span>
+                    </div>
+                    <div class="credit-extra-info">
+                        <span *ngIf="credit.interest_rate">Tasa: {{ credit.interest_rate }}%</span>
+                        <span *ngIf="credit.total_installments && !credit.is_paid">Cuotas Restantes: {{
+                            (credit.total_installments || 0) - (credit.installments_paid || 0) }}/{{
+                            credit.total_installments }}</span>
+                    </div>
+                    <div class="next-payment" *ngIf="credit.next_payment_date && !credit.is_paid">
+                        Vence: {{ credit.next_payment_date | date:'dd/MM/yyyy' }} ({{ account.currency }} {{
+                        credit.next_payment_amount | number:'1.2-2' }})
+                    </div>
+                </div>
+                <div class="actions">
+                    <button (click)="editCredit(credit)" class="btn-icon"><i class="fas fa-pencil-alt"></i></button>
+                    <button (click)="deleteCredit(credit.id!)" class="btn-icon delete"><i
+                            class="fas fa-trash"></i></button>
+                </div>
+            </div>
+            <div class="no-credits" *ngIf="credits.length === 0">
+                No tienes créditos registrados en esta cuenta.
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" *ngIf="showCreditModal">
+        <div class="modal-content">
+            <h2>{{ editingCredit ? 'Editar Crédito' : 'Nuevo Crédito' }}</h2>
+            <form (ngSubmit)="saveCredit()">
+                <div class="form-group">
+                    <label>Nombre del Crédito</label>
+                    <input type="text" [(ngModel)]="newCredit.name" name="name" required
+                        placeholder="Ej: Préstamo Personal">
+                </div>
+                <div class="form-group">
+                    <label>Monto Total</label>
+                    <input type="number" [(ngModel)]="newCredit.total_amount" name="total_amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Monto Restante</label>
+                    <input type="number" [(ngModel)]="newCredit.remaining_amount" name="remaining_amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Tasa de Interés (%)</label>
+                    <input type="number" [(ngModel)]="newCredit.interest_rate" name="interest_rate" step="0.01"
+                        placeholder="Ej: 45.50">
+                </div>
+                <div class="form-group">
+                    <label>Total de Cuotas</label>
+                    <input type="number" [(ngModel)]="newCredit.total_installments" name="total_installments" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Cuotas Pagadas</label>
+                    <input type="number" [(ngModel)]="newCredit.installments_paid" name="installments_paid" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Próximo Vencimiento</label>
+                    <input type="date" [(ngModel)]="newCredit.next_payment_date" name="next_payment_date">
+                </div>
+                <div class="form-group">
+                    <label>Monto Próximo Vencimiento</label>
+                    <input type="number" [(ngModel)]="newCredit.next_payment_amount" name="next_payment_amount">
+                </div>
+                <div class="form-group checkbox">
+                    <label>
+                        <input type="checkbox" [(ngModel)]="newCredit.is_paid" name="is_paid">
+                        Marcado como Pagado
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" (click)="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

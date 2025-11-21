@@ -3,6 +3,7 @@ import { TransaccionServicio, Transaccion } from '../../transaccion'; // <-- Ase
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { FormularioTransaccion } from '../../formulario-transaccion/formulario-transaccion'
 
 // La interfaz Transaccion se define en el servicio, aquí la importamos.
 
@@ -17,7 +18,8 @@ interface SortConfig {
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormularioTransaccion
   ],
   templateUrl: './reportes.html',
   styleUrls: ['./reportes.scss']
@@ -25,6 +27,8 @@ interface SortConfig {
 export class ReportesComponente implements OnInit {
 
   // --- Dependencias ---
+  public isModalOpen = false;
+  public selectedTransaction: Transaccion | null = null;
   private route = inject(ActivatedRoute);
   private transaccionServicio = inject(TransaccionServicio); // <-- 1. Inyectamos el servicio
 
@@ -65,6 +69,37 @@ export class ReportesComponente implements OnInit {
         this.applyFiltersAndSort();
       }
     });
+  }
+
+  refreshTransactions(): void {
+    this.transaccionServicio.obtenerTransacciones().subscribe({
+      next: (data) => {
+        this.allTransactions = data;
+        this.applyFiltersAndSort();
+      },
+      error: (err) => console.error('Error al recargar transacciones:', err)
+    });
+  }
+
+  // Métodos para controlar el modal
+  openTransactionModal(transaction: Transaccion | null = null): void {
+    this.selectedTransaction = transaction; // Guarda la transacción (o null si es nueva)
+    this.isModalOpen = true;
+  }
+
+  closeTransactionModal(): void {
+    this.isModalOpen = false;
+    this.selectedTransaction = null; // Limpia la selección al cerrar
+  }
+
+  editTransaction(tx: Transaccion, event: MouseEvent) {
+    event.stopPropagation();
+    this.openTransactionModal(tx);
+  }
+
+  onTransactionSaved(): void {
+    console.log('La transacción se guardó, refrescando la lista...');
+    this.refreshTransactions();
   }
 
   loadTransactions(): void {
@@ -137,14 +172,6 @@ export class ReportesComponente implements OnInit {
     this.filterForm.reset({
       searchTerm: '', category: '', type: '', startDate: '', endDate: ''
     });
-  }
-
-  // --- 3. IMPLEMENTAMOS LAS ACCIONES CRUD REALES ---
-  editTransaction(tx: Transaccion, event: MouseEvent) { 
-    event.stopPropagation();
-    console.log('Editando:', tx);
-    // AQUÍ iría la lógica para abrir un modal/formulario con los datos de 'tx'
-    // y al guardar, llamarías a `this.transaccionServicio.updateTransaction(...)`
   }
 
   deleteTransaction(tx: Transaccion, event: MouseEvent) {

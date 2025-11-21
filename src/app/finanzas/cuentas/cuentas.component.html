@@ -1,0 +1,73 @@
+<div class="cuentas-container">
+  <div class="header">
+    <h1>Mis Cuentas</h1>
+    <button class="btn-add" (click)="openAddModal()">
+      <i class="fas fa-plus"></i> Nueva Cuenta
+    </button>
+  </div>
+
+  <div class="accounts-grid">
+    <div class="account-card" *ngFor="let account of accounts" (click)="goToDetail(account.id!)">
+      <div class="card-header">
+        <div class="bank-info">
+          <i class="fas fa-university bank-icon"></i>
+          <span class="bank-name">{{ account.bank_name || 'Banco' }}</span>
+        </div>
+        <div class="actions">
+          <button (click)="editAccount(account); $event.stopPropagation()" class="btn-icon"><i
+              class="fas fa-pencil-alt"></i></button>
+          <button (click)="deleteAccount(account.id!); $event.stopPropagation()" class="btn-icon delete"><i
+              class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 class="account-name">{{ account.name }}</h3>
+        <div class="balance">
+          <span class="currency">{{ account.currency }}</span>
+          <span class="amount">{{ account.balance | number:'1.2-2' }}</span>
+        </div>
+        <div class="cbu" *ngIf="account.cbu_cvu">
+          <small>CBU/CVU: {{ account.cbu_cvu }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showAddModal">
+    <div class="modal-content">
+      <h2>{{ editingAccount ? 'Editar Cuenta' : 'Nueva Cuenta' }}</h2>
+      <form (ngSubmit)="saveAccount()">
+        <div class="form-group">
+          <label>Nombre de la Cuenta</label>
+          <input type="text" [(ngModel)]="newAccount.name" name="name" required
+            placeholder="Ej: Banco Galicia - Sueldo">
+        </div>
+        <div class="form-group">
+          <label>Saldo Actual</label>
+          <input type="number" [(ngModel)]="newAccount.balance" name="balance" required>
+        </div>
+        <div class="form-group">
+          <label>Moneda</label>
+          <select [(ngModel)]="newAccount.currency" name="currency">
+            <option value="ARS">ARS (Pesos Argentinos)</option>
+            <option value="USD">USD (Dólares)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>TNA - Tasa Nominal Anual (%)</label>
+          <input type="number" [(ngModel)]="newAccount.tna" name="tna" step="0.01" placeholder="Ej: 45.50">
+        </div>
+        <div class="form-group">
+          <label>CBU / CVU (Opcional)</label>
+          <input type="number" [(ngModel)]="newAccount.cbu_cvu" name="cbu_cvu" placeholder="0000000000000000000000"
+            required="true">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-save">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

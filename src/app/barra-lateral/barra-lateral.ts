@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Component, EventEmitter, Input, Output  } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MenuItem } from '../shared/interfaces/menu-item.interface';
 import { UserProfile } from '../servicio/auth.interfaces';
 
@@ -14,7 +14,7 @@ export class BarraLateral {
   @Input() estaColapsado = false;
   @Input() userProfile: UserProfile | null = null;
   @Output() lateralSeleccionado = new EventEmitter<void>();
-  
+
   menuItems: MenuItem[] = [
     {
       id: 0,
@@ -27,6 +27,20 @@ export class BarraLateral {
       id: 2,
       esCabecera: true,
       etiqueta: 'Gestión Financiera',
+    },
+    {
+      id: 100,
+      etiqueta: 'Cuentas',
+      icono: 'fas fa-university',
+      estaAbierto: false,
+      hijo: [
+        {
+          id: 101,
+          etiqueta: 'Mis Cuentas',
+          icono: 'fas fa-list',
+          ruta: '/finanzas/cuentas'
+        }
+      ]
     },
     {
       id: 3,
@@ -241,15 +255,12 @@ export class BarraLateral {
 
 
   //
-  presionarBarraLateral()
-  {
+  presionarBarraLateral() {
     this.lateralSeleccionado.emit();
   }
 
-  presionarItemMenu(item: MenuItem)
-  {
-    if(!this.estaColapsado && item.hijo)
-    {
+  presionarItemMenu(item: MenuItem) {
+    if (!this.estaColapsado && item.hijo) {
       item.estaAbierto = !item.estaAbierto;
     }
   }

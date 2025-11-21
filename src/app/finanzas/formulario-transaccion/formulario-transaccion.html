@@ -1,0 +1,57 @@
+<!-- Overlay oscuro que cubre toda la pantalla -->
+<div (click)="closeModal()" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+<!-- Contenedor del Modal -->
+<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg z-50 w-full max-w-lg">
+  <div class="p-6">
+    <!-- Cabecera del Modal -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Nueva Transacción</h2>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()">
+      <div class="space-y-4">
+        <!-- Descripción -->
+        <div>
+          <label for="descripcion">Descripción</label>
+          <input id="descripcion" type="text" formControlName="descripcion" class="mt-1 block w-full rounded-md border-gray-300">
+        </div>
+
+        <!-- Monto y Tipo en una fila -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="monto">Monto</label>
+            <input id="monto" type="number" formControlName="monto" class="mt-1 block w-full rounded-md border-gray-300">
+          </div>
+          <div>
+            <label for="transaccion_tipo">Tipo</label>
+            <select id="transaccion_tipo" formControlName="transaccion_tipo" class="mt-1 block w-full rounded-md border-gray-300">
+              <option value="EXPENSE">Gasto</option>
+              <option value="INCOME">Ingreso</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fecha y Categoría en una fila -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="fecha">Fecha</label>
+            <input id="fecha" type="date" formControlName="fecha" class="mt-1 block w-full rounded-md border-gray-300">
+          </div>
+          <div>
+            <label for="categoria">Categoría</label>
+            <input id="categoria" type="text" formControlName="categoria" class="mt-1 block w-full rounded-md border-gray-300">
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button" (click)="closeModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Cancelar</button>
+        <button type="submit" [disabled]="transactionForm.invalid" class="bg-blue-600 text-white px-4 py-2 rounded-md disabled:bg-blue-300">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
