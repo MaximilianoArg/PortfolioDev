@@ -2,15 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Transaccion 
-{
+export interface Transaccion {
   id: number;
   usuario: number;
+  account?: number;
+  account_name?: string;
   descripcion: string;
   monto: string;
   fecha: string;
-  categoria: string;
-  transaccion_tipo: 'income' | 'expense';
+  categoria: number;  // Category ID (ForeignKey)
+  category_name?: string;  // Category name for display
+  tipo_transaccion: 'INGRESO' | 'GASTO';
 }
 
 @Injectable({
@@ -25,17 +27,17 @@ export class TransaccionServicio {
     return this.http.get<Transaccion[]>(this.apiUrl);
   }
 
-  crearTransaccion(transaccion: Transaccion): Observable<Transaccion> {
+  crearTransaccion(transaccion: any): Observable<Transaccion> {
     return this.http.post<Transaccion>(this.apiUrl, transaccion);
   }
 
   actualizarTransaccion(transaccion: Transaccion): Observable<Transaccion> {
     const url = `${this.apiUrl}${transaccion.id}/`;
     return this.http.put<Transaccion>(url, transaccion);
-  } 
+  }
 
   borrarTransaccion(id: number): Observable<void> {
     const url = `${this.apiUrl}${id}/`;
     return this.http.delete<void>(url);
-  } 
+  }
 }

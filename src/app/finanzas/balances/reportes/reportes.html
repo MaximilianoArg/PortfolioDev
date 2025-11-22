@@ -7,33 +7,38 @@
       <p class="text-gray-500 mt-1">Filtra y analiza todas tus transacciones.</p>
     </div>
     <div>
-      <button (click)="openTransactionModal()" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700">
+      <button (click)="openTransactionModal()"
+        class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700">
         + Nueva Transacción
       </button>
     </div>
   </div>
   <!-- 1. Panel de Filtros -->
   <div class="bg-white p-4 rounded-xl shadow-md mb-8">
-    <form [formGroup]="filterForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+    <form [formGroup]="filterForm"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
       <!-- Búsqueda por Texto -->
       <div class="lg:col-span-1">
         <label for="searchTerm" class="block text-sm font-medium text-gray-700">Buscar</label>
-        <input type="text" id="searchTerm" formControlName="searchTerm" placeholder="Ej: Supermercado" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <input type="text" id="searchTerm" formControlName="searchTerm" placeholder="Ej: Supermercado"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
       </div>
       <!-- Filtro por Categoría -->
       <div>
         <label for="category" class="block text-sm font-medium text-gray-700">Categoría</label>
-        <select id="category" formControlName="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <select id="category" formControlName="category"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           <option value="">Todas</option>
           @for (cat of availableCategories; track cat) {
-            <option [value]="cat">{{cat}}</option>
+          <option [value]="cat">{{cat}}</option>
           }
         </select>
       </div>
       <!-- Filtro por Tipo -->
       <div>
         <label for="type" class="block text-sm font-medium text-gray-700">Tipo</label>
-        <select id="type" formControlName="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        <select id="type" formControlName="type"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           <option value="">Todos</option>
           <option value="INGRESO">Ingreso</option>
           <option value="GASTO">Gasto</option>
@@ -43,16 +48,19 @@
       <div class="flex items-end gap-2">
         <div>
           <label for="startDate" class="block text-sm font-medium text-gray-700">Desde</label>
-          <input type="date" id="startDate" formControlName="startDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <input type="date" id="startDate" formControlName="startDate"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
         </div>
         <div>
           <label for="endDate" class="block text-sm font-medium text-gray-700">Hasta</label>
-          <input type="date" id="endDate" formControlName="endDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          <input type="date" id="endDate" formControlName="endDate"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
         </div>
       </div>
       <!-- Botón de Reset -->
       <div class="flex items-end">
-        <button type="button" (click)="resetFilters()" class="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Limpiar</button>
+        <button type="button" (click)="resetFilters()"
+          class="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Limpiar</button>
       </div>
     </form>
   </div>
@@ -63,33 +71,45 @@
       <thead class="bg-gray-50">
         <tr>
           <!-- Cabeceras Clickeables para Ordenar -->
-          <th (click)="onSort('fecha')" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Fecha <i class="fas fa-sort ml-1"></i></th>
-          <th (click)="onSort('descripcion')" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Descripción <i class="fas fa-sort ml-1"></i></th>
-          <th (click)="onSort('categoria')" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Categoría <i class="fas fa-sort ml-1"></i></th>
-          <th (click)="onSort('monto')" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer text-right">Monto <i class="fas fa-sort ml-1"></i></th>
+          <th (click)="onSort('fecha')"
+            class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Fecha <i
+              class="fas fa-sort ml-1"></i></th>
+          <th (click)="onSort('descripcion')"
+            class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Descripción <i
+              class="fas fa-sort ml-1"></i></th>
+          <th (click)="onSort('categoria')"
+            class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Categoría <i
+              class="fas fa-sort ml-1"></i></th>
+          <th (click)="onSort('monto')"
+            class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer text-right">Monto
+            <i class="fas fa-sort ml-1"></i>
+          </th>
           <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Acciones</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
         @for (tx of filteredTransactions; track tx.id; let i = $index) {
-          <tr [ngClass]="{'bg-gray-50': i % 2 !== 0}" class="hover:bg-blue-50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ tx.fecha | date:'dd/MM/yyyy' }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ tx.descripcion }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ tx.categoria }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold" [ngClass]="tx.transaccion_tipo === 'income' ? 'text-green-600' : 'text-red-600'">
-              {{ tx.monto | currency:'ARS' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-              <button (click)="editTransaction(tx, $event)" title="Editar" class="text-blue-500 hover:text-blue-700 mr-4"><i class="fas fa-edit"></i></button>
-              <button (click)="deleteTransaction(tx, $event)" title="Eliminar" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
+        <tr [ngClass]="{'bg-gray-50': i % 2 !== 0}" class="hover:bg-blue-50">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ tx.fecha | date:'dd/MM/yyyy' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ tx.descripcion }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ tx.categoria }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold"
+            [ngClass]="tx.tipo_transaccion === 'INGRESO' ? 'text-green-600' : 'text-red-600'">
+            {{ tx.monto | currency:'ARS' }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+            <button (click)="editTransaction(tx, $event)" title="Editar"
+              class="text-blue-500 hover:text-blue-700 mr-4"><i class="fas fa-edit"></i></button>
+            <button (click)="deleteTransaction(tx, $event)" title="Eliminar" class="text-red-500 hover:text-red-700"><i
+                class="fas fa-trash"></i></button>
+          </td>
+        </tr>
         } @empty {
-          <tr>
-            <td colspan="5" class="text-center py-8 text-gray-500">
-              No se encontraron transacciones con los filtros seleccionados.
-            </td>
-          </tr>
+        <tr>
+          <td colspan="5" class="text-center py-8 text-gray-500">
+            No se encontraron transacciones con los filtros seleccionados.
+          </td>
+        </tr>
         }
       </tbody>
     </table>
@@ -97,9 +117,7 @@
 </div>
 <!-- Componente modal -->
 @if (isModalOpen) {
-  <app-formulario-transaccion
-    [transactionToEdit]="selectedTransaction"
-    (close)="closeTransactionModal()" 
-    (transactionSaved)="onTransactionSaved()">
-  </app-formulario-transaccion>
+<app-formulario-transaccion [transactionToEdit]="selectedTransaction" (close)="closeTransactionModal()"
+  (transactionSaved)="onTransactionSaved()">
+</app-formulario-transaccion>
 }
