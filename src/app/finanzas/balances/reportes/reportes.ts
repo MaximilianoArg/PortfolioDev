@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormularioTransaccion } from '../../formulario-transaccion/formulario-transaccion'
+import { CategoryService } from '../../servicio/category.service';
+import { Category } from '../../servicio/category.interfaces';
 
 interface SortConfig {
   key: keyof Transaccion | null;
@@ -27,13 +29,13 @@ export class ReportesComponente implements OnInit {
   public selectedTransaction: Transaccion | null = null;
   private route = inject(ActivatedRoute);
   private transaccionServicio = inject(TransaccionServicio);
+  private categoryService = inject(CategoryService);
 
   allTransactions: Transaccion[] = [];
   filteredTransactions: Transaccion[] = [];
+  availableCategories: Category[] = [];
 
   filterForm: FormGroup;
-  availableCategories: string[] = ['Vivienda', 'Comida', 'Transporte', 'Ocio', 'Salud', 'Ahorro', 'Ingresos'];
-
   sortConfig: SortConfig = { key: 'fecha', direction: 'desc' };
 
   constructor() {
@@ -47,6 +49,14 @@ export class ReportesComponente implements OnInit {
   }
 
   ngOnInit(): void {
+    // Cargar categorías para el filtro
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.availableCategories = categories;
+      },
+      error: (err) => console.error('Error al cargar categorías:', err)
+    });
+
     this.loadTransactions();
 
     this.filterForm.valueChanges.subscribe(() => {
@@ -55,8 +65,8 @@ export class ReportesComponente implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       if (params['categoria']) {
-        const categoryName = this.availableCategories[params['categoria'] - 1] || '';
-        this.filterForm.get('category')?.setValue(categoryName, { emitEvent: false });
+        // Usar el ID de categoría directamente
+        this.filterForm.get('category')?.setValue(params['categoria'], { emitEvent: false });
         this.applyFiltersAndSort();
       }
     });
@@ -111,7 +121,8 @@ export class ReportesComponente implements OnInit {
       transactions = transactions.filter(tx => tx.descripcion.toLowerCase().includes(filters.searchTerm.toLowerCase()));
     }
     if (filters.category) {
-      transactions = transactions.filter(tx => tx.categoria === filters.category);
+      // Filtrar por ID de categoría
+      transactions = transactions.filter(tx => tx.categoria === Number(filters.category));
     }
     if (filters.type) {
       transactions = transactions.filter(tx => tx.tipo_transaccion === filters.type);

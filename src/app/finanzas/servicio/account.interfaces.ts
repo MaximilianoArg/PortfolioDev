@@ -20,6 +20,7 @@ export interface Account {
     currency: string;
     tna?: number;
     bank_name?: string;
+    bank_image?: string;
     cbu_cvu?: string;
     credits?: Credit[];
     created_at?: string;

@@ -49,32 +49,55 @@ export class CuentasComponent implements OnInit {
     closeModal(): void {
         this.showAddModal = false;
         this.editingAccount = null;
+        this.selectedFile = null;
+    }
+
+    selectedFile: File | null = null;
+
+    onFileSelected(event: any): void {
+        const file = event.target.files[0];
+        if (file) {
+            this.selectedFile = file;
+        }
     }
 
     saveAccount(): void {
-        if (this.editingAccount) {
-            // Edit mode
-            if (this.editingAccount.id) {
-                this.accountService.updateAccount(this.editingAccount.id, this.newAccount).subscribe({
-                    next: () => {
-                        this.loadAccounts();
-                        this.closeModal();
-                    },
-                    error: (err) => console.error('Error updating account', err)
-                });
+        const formData = new FormData();
+        formData.append('name', this.newAccount.name || '');
+        formData.append('balance', String(this.newAccount.balance || 0));
+        formData.append('currency', this.newAccount.currency || 'ARS');
+        if (this.newAccount.tna) formData.append('tna', String(this.newAccount.tna));
+        if (this.newAccount.cbu_cvu) formData.append('cbu_cvu', String(this.newAccount.cbu_cvu));
+
+        // Simple auto-detect bank logic if not already set
+        let bankName = this.newAccount.bank_name;
+        if (!bankName) {
+            if (this.newAccount.name?.toLowerCase().includes('galicia')) {
+                bankName = 'Galicia';
+            } else if (this.newAccount.name?.toLowerCase().includes('santander')) {
+                bankName = 'Santander';
+            } else if (this.newAccount.name?.toLowerCase().includes('bbva')) {
+                bankName = 'BBVA';
             }
+        }
+        if (bankName) formData.append('bank_name', bankName);
+
+        if (this.selectedFile) {
+            formData.append('bank_image', this.selectedFile);
+        }
+
+        if (this.editingAccount && this.editingAccount.id) {
+            // Edit mode
+            this.accountService.updateAccount(this.editingAccount.id, formData).subscribe({
+                next: () => {
+                    this.loadAccounts();
+                    this.closeModal();
+                },
+                error: (err) => console.error('Error updating account', err)
+            });
         } else {
             // Create mode
-            // Simple auto-detect bank logic
-            if (this.newAccount.name?.toLowerCase().includes('galicia')) {
-                this.newAccount.bank_name = 'Galicia';
-            } else if (this.newAccount.name?.toLowerCase().includes('santander')) {
-                this.newAccount.bank_name = 'Santander';
-            } else if (this.newAccount.name?.toLowerCase().includes('bbva')) {
-                this.newAccount.bank_name = 'BBVA';
-            }
-
-            this.accountService.createAccount(this.newAccount as Account).subscribe({
+            this.accountService.createAccount(formData).subscribe({
                 next: () => {
                     this.loadAccounts();
                     this.closeModal();

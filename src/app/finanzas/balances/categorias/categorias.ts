@@ -1,12 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Para @for, [ngClass], etc.
-import { Router, RouterModule } from '@angular/router'; // Para la navegación
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { CategoryService } from '../../servicio/category.service';
+import { BudgetService } from '../../servicio/budget.service';
+import { Category, Budget } from '../../servicio/category.interfaces';
+import { forkJoin } from 'rxjs';
 
-// --- Interface para una categoría ---
-export interface Category {
+// Interface para mostrar categorías con presupuesto
+interface CategoryWithBudget {
   id: number;
   name: string;
-  icon: string; // Clase de Font Awesome, ej: 'fas fa-shopping-cart'
+  icon: string;
+  color: string;
   spentAmount: number;
   budgetedAmount: number;
 }
@@ -16,47 +21,81 @@ export interface Category {
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule // Necesario si usamos routerLink para navegar
+    RouterModule
   ],
   templateUrl: './categorias.html',
   styleUrls: ['./categorias.scss']
 })
 export class CategoriasComponente implements OnInit {
+  private categoryService = inject(CategoryService);
+  private budgetService = inject(BudgetService);
+  private router = inject(Router);
 
-  // Datos de ejemplo. En una app real, vendrían de un servicio.
-  categories: Category[] = [];
+  categories: CategoryWithBudget[] = [];
+  isLoading = true;
+  error: string | null = null;
 
-  // --- Propiedades para el modal de gestión ---
+  // Propiedades para el modal de gestión
   isModalOpen = false;
   modalMode: 'add' | 'edit' = 'add';
-  selectedCategory: Category | null = null; // Para saber qué categoría editar
-
-  // Inyectamos el Router para poder navegar programáticamente
-  constructor(private router: Router) {}
+  selectedCategory: CategoryWithBudget | null = null;
 
   ngOnInit(): void {
     this.loadCategories();
   }
 
-  loadCategories(): void {
-    // --- SIMULACIÓN DE LLAMADA A UN SERVICIO ---
-    this.categories = [
-      { id: 1, name: 'Vivienda', icon: 'fas fa-home', spentAmount: 1200, budgetedAmount: 1200 },
-      { id: 2, name: 'Comida', icon: 'fas fa-shopping-cart', spentAmount: 650.50, budgetedAmount: 800 },
-      { id: 3, name: 'Transporte', icon: 'fas fa-bus', spentAmount: 150, budgetedAmount: 200 },
-      { id: 4, name: 'Ocio y Entretenimiento', icon: 'fas fa-film', spentAmount: 210.75, budgetedAmount: 250 },
-      { id: 5, name: 'Salud', icon: 'fas fa-heartbeat', spentAmount: 50, budgetedAmount: 150 },
-      { id: 6, name: 'Ahorro', icon: 'fas fa-piggy-bank', spentAmount: 1000, budgetedAmount: 1000 },
-    ].sort((a, b) => (b.spentAmount / b.budgetedAmount) - (a.spentAmount / a.budgetedAmount)); // Ordenar por % de gasto
+  // Método público para recargar categorías
+  refresh(): void {
+    this.loadCategories();
   }
 
-  // --- Helpers para la plantilla ---
+  loadCategories(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    // Obtener mes actual en formato YYYY-MM
+    const currentDate = new Date();
+    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+
+    // Cargar categorías y presupuestos en paralelo
+    forkJoin({
+      categories: this.categoryService.getCategoriesByType('GASTO'),
+      budgets: this.budgetService.getBudgets(currentMonth)
+    }).subscribe({
+      next: ({ categories, budgets }) => {
+        // Combinar categorías con sus presupuestos
+        this.categories = categories.map(cat => {
+          const budget = budgets.find(b => b.category === cat.id);
+          return {
+            id: cat.id,
+            name: cat.name,
+            icon: cat.icon || 'fas fa-tag',
+            color: cat.color || '#3B82F6',
+            spentAmount: budget?.spent || 0,
+            budgetedAmount: budget?.amount || 0
+          };
+        }).sort((a, b) => {
+          // Ordenar por porcentaje de gasto (mayor a menor)
+          const percentA = a.budgetedAmount > 0 ? (a.spentAmount / a.budgetedAmount) : 0;
+          const percentB = b.budgetedAmount > 0 ? (b.spentAmount / b.budgetedAmount) : 0;
+          return percentB - percentA;
+        });
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías:', err);
+        this.error = 'Error al cargar las categorías. Por favor, intenta nuevamente.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   // Calcula el porcentaje de gasto para la barra de progreso
   calculateProgress(spent: number, budget: number): number {
     if (budget === 0) return 0;
     const percentage = (spent / budget) * 100;
-    return Math.min(percentage, 100); // Para que la barra no se pase del 100%
+    return Math.min(percentage, 100);
   }
 
   // Devuelve la clase de color de Tailwind para la barra de progreso según el %
@@ -66,37 +105,33 @@ export class CategoriasComponente implements OnInit {
     return 'bg-blue-500';
   }
 
-  // --- Navegación ---
-  
   // Navega a la página de reportes, filtrada por esta categoría
-  viewCategoryDetails(category: Category): void {
-    // Navegamos a la ruta de reportes y pasamos el ID de la categoría como parámetro
+  viewCategoryDetails(category: CategoryWithBudget): void {
     this.router.navigate(['/finanzas/balances/reportes'], { queryParams: { categoria: category.id } });
   }
 
-  // --- Lógica del Modal ---
-
+  // Lógica del Modal
   openAddModal(): void {
     this.modalMode = 'add';
-    this.selectedCategory = null; // Reiniciamos por si había algo seleccionado
+    this.selectedCategory = null;
     this.isModalOpen = true;
   }
-  
-  openEditModal(category: Category, event: MouseEvent): void {
-    event.stopPropagation(); // Evita que el clic active la navegación
+
+  openEditModal(category: CategoryWithBudget, event: MouseEvent): void {
+    event.stopPropagation();
     this.modalMode = 'edit';
-    this.selectedCategory = { ...category }; // Copiamos el objeto para no modificar el original
+    this.selectedCategory = { ...category };
     this.isModalOpen = true;
   }
-  
+
   closeModal(): void {
     this.isModalOpen = false;
   }
-  
+
   saveCategory(): void {
     // Aquí iría la lógica para guardar los datos del formulario del modal
-    // llamando a un servicio. Por ahora, solo cerramos el modal.
     console.log('Guardando categoría:', this.selectedCategory);
     this.closeModal();
+    this.loadCategories(); // Recargar categorías después de guardar
   }
 }

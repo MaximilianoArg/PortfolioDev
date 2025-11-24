@@ -10,7 +10,9 @@
     <div class="account-card" *ngFor="let account of accounts" (click)="goToDetail(account.id!)">
       <div class="card-header">
         <div class="bank-info">
-          <i class="fas fa-university bank-icon"></i>
+          <img *ngIf="account.bank_image" [src]="account.bank_image" alt="Bank Logo" class="bank-logo-img"
+            style="width: 24px; height: 24px; object-fit: contain; margin-right: 8px;">
+          <i *ngIf="!account.bank_image" class="fas fa-university bank-icon"></i>
           <span class="bank-name">{{ account.bank_name || 'Banco' }}</span>
         </div>
         <div class="actions">
@@ -57,6 +59,10 @@
         <div class="form-group">
           <label>TNA - Tasa Nominal Anual (%)</label>
           <input type="number" [(ngModel)]="newAccount.tna" name="tna" step="0.01" placeholder="Ej: 45.50">
+        </div>
+        <div class="form-group">
+          <label>Logo del Banco (Opcional)</label>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*">
         </div>
         <div class="form-group">
           <label>CBU / CVU (Opcional)</label>

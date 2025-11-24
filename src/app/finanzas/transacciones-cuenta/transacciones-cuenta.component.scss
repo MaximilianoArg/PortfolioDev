@@ -1,0 +1,411 @@
+.transacciones-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+
+    .header-left {
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+
+            &:hover {
+                color: #2563eb;
+            }
+        }
+
+        .header-info {
+            h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #1a1a1a;
+                margin: 0 0 0.5rem 0;
+            }
+
+            .saldo {
+                font-size: 1.125rem;
+                color: #6b7280;
+                margin: 0;
+            }
+        }
+    }
+
+    .btn-export {
+        padding: 0.75rem 1.5rem;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background 0.3s;
+
+        &:hover {
+            background: #059669;
+        }
+    }
+}
+
+// Filtros
+.filtros-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+
+    .filtro-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input,
+        select {
+            padding: 0.625rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+
+            &:focus {
+                outline: none;
+                border-color: #3b82f6;
+            }
+        }
+
+        .btn-clear {
+            padding: 0.625rem 1rem;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #e5e7eb;
+            }
+        }
+    }
+}
+
+// Resumen
+.resumen-transacciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.resumen-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    &.ingreso .value {
+        color: #10b981;
+    }
+
+    &.gasto .value {
+        color: #ef4444;
+    }
+
+    &.balance .value {
+        color: #3b82f6;
+    }
+}
+
+// Loading
+.loading-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    i {
+        font-size: 3rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #6b7280;
+    }
+}
+
+// Tabla
+.tabla-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.transacciones-tabla {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+        background: #f9fafb;
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e5e7eb;
+
+            &.sortable {
+                cursor: pointer;
+                user-select: none;
+                transition: background 0.2s;
+
+                &:hover {
+                    background: #f3f4f6;
+                }
+
+                i {
+                    margin-left: 0.5rem;
+                    color: #9ca3af;
+                }
+            }
+
+            &.text-right {
+                text-align: right;
+            }
+
+            &.text-center {
+                text-align: center;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s;
+
+            &:hover {
+                background: #f9fafb;
+            }
+
+            td {
+                padding: 1rem;
+                font-size: 0.875rem;
+                color: #1a1a1a;
+
+                &.text-right {
+                    text-align: right;
+                }
+
+                &.text-center {
+                    text-align: center;
+                }
+
+                &.monto {
+                    font-weight: 700;
+
+                    &.ingreso {
+                        color: #10b981;
+                    }
+
+                    &.gasto {
+                        color: #ef4444;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.categoria-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #eff6ff;
+    color: #3b82f6;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.tipo-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+
+    &.ingreso {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    &.gasto {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #f3f4f6;
+        color: #ef4444;
+    }
+}
+
+.no-transacciones {
+    text-align: center;
+    padding: 4rem 2rem;
+
+    i {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #6b7280;
+    }
+}
+
+// Paginación
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+
+    .btn-pagina {
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover:not(:disabled) {
+            background: #f3f4f6;
+            border-color: #3b82f6;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    .pagina-info {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .items-por-pagina {
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .transacciones-container {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .filtros-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .resumen-transacciones {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-container {
+        overflow-x: auto;
+    }
+
+    .transacciones-tabla {
+        min-width: 800px;
+    }
+}

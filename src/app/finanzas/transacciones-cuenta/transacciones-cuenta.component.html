@@ -1,0 +1,171 @@
+<div class="transacciones-container">
+    <div class="header">
+        <div class="header-left">
+            <a routerLink="/finanzas/cuentas/{{ accountId }}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <div class="header-info" *ngIf="account">
+                <h1>Transacciones - {{ account.name }}</h1>
+                <p class="saldo">Saldo: {{ account.currency }} {{ account.balance | number:'1.2-2' }}</p>
+            </div>
+        </div>
+        <button class="btn-export" (click)="exportarCSV()">
+            <i class="fas fa-download"></i> Exportar CSV
+        </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-section">
+        <div class="filtros-grid">
+            <div class="filtro-item">
+                <label>Buscar</label>
+                <input type="text" [(ngModel)]="filtros.busqueda" (ngModelChange)="aplicarFiltros()"
+                    placeholder="Descripción o categoría...">
+            </div>
+
+            <div class="filtro-item">
+                <label>Categoría</label>
+                <select [(ngModel)]="filtros.categoriaId" (ngModelChange)="aplicarFiltros()">
+                    <option [ngValue]="null">Todas</option>
+                    <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{ cat.name }}</option>
+                </select>
+            </div>
+
+            <div class="filtro-item">
+                <label>Tipo</label>
+                <select [(ngModel)]="filtros.tipoTransaccion" (ngModelChange)="aplicarFiltros()">
+                    <option value="">Todos</option>
+                    <option value="INGRESO">Ingresos</option>
+                    <option value="GASTO">Gastos</option>
+                </select>
+            </div>
+
+            <div class="filtro-item">
+                <label>Desde</label>
+                <input type="date" [(ngModel)]="filtros.fechaInicio" (ngModelChange)="aplicarFiltros()">
+            </div>
+
+            <div class="filtro-item">
+                <label>Hasta</label>
+                <input type="date" [(ngModel)]="filtros.fechaFin" (ngModelChange)="aplicarFiltros()">
+            </div>
+
+            <div class="filtro-item">
+                <button class="btn-clear" (click)="limpiarFiltros()">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="resumen-transacciones">
+        <div class="resumen-card">
+            <span class="label">Total Transacciones</span>
+            <span class="value">{{ transaccionesFiltradas.length }}</span>
+        </div>
+        <div class="resumen-card ingreso">
+            <span class="label">Total Ingresos</span>
+            <span class="value">{{ calcularTotalIngresos() | number:'1.2-2' }}</span>
+        </div>
+        <div class="resumen-card gasto">
+            <span class="label">Total Gastos</span>
+            <span class="value">{{ calcularTotalGastos() | number:'1.2-2' }}</span>
+        </div>
+        <div class="resumen-card balance">
+            <span class="label">Balance</span>
+            <span class="value">{{ (calcularTotalIngresos() - calcularTotalGastos()) | number:'1.2-2' }}</span>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="cargando">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando transacciones...</p>
+    </div>
+
+    <!-- Tabla de Transacciones -->
+    <div class="tabla-container" *ngIf="!cargando">
+        <table class="transacciones-tabla" *ngIf="transaccionesPaginadas.length > 0">
+            <thead>
+                <tr>
+                    <th (click)="cambiarOrden('fecha')" class="sortable">
+                        Fecha
+                        <i class="fas" [ngClass]="{
+              'fa-sort': ordenarPor !== 'fecha',
+              'fa-sort-up': ordenarPor === 'fecha' && ordenAscendente,
+              'fa-sort-down': ordenarPor === 'fecha' && !ordenAscendente
+            }"></i>
+                    </th>
+                    <th>Descripción</th>
+                    <th (click)="cambiarOrden('categoria')" class="sortable">
+                        Categoría
+                        <i class="fas" [ngClass]="{
+              'fa-sort': ordenarPor !== 'categoria',
+              'fa-sort-up': ordenarPor === 'categoria' && ordenAscendente,
+              'fa-sort-down': ordenarPor === 'categoria' && !ordenAscendente
+            }"></i>
+                    </th>
+                    <th>Tipo</th>
+                    <th (click)="cambiarOrden('monto')" class="sortable text-right">
+                        Monto
+                        <i class="fas" [ngClass]="{
+              'fa-sort': ordenarPor !== 'monto',
+              'fa-sort-up': ordenarPor === 'monto' && ordenAscendente,
+              'fa-sort-down': ordenarPor === 'monto' && !ordenAscendente
+            }"></i>
+                    </th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let transaccion of transaccionesPaginadas">
+                    <td>{{ transaccion.fecha | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ transaccion.descripcion }}</td>
+                    <td>
+                        <span class="categoria-badge">{{ transaccion.category_name || 'Sin categoría' }}</span>
+                    </td>
+                    <td>
+                        <span class="tipo-badge" [ngClass]="obtenerColorTipo(transaccion.tipo_transaccion)">
+                            {{ transaccion.tipo_transaccion }}
+                        </span>
+                    </td>
+                    <td class="text-right monto" [ngClass]="obtenerColorTipo(transaccion.tipo_transaccion)">
+                        {{ transaccion.monto | number:'1.2-2' }}
+                    </td>
+                    <td class="text-center">
+                        <button class="btn-icon" title="Eliminar" (click)="eliminarTransaccion(transaccion.id)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="no-transacciones" *ngIf="transaccionesPaginadas.length === 0">
+            <i class="fas fa-inbox"></i>
+            <p>No se encontraron transacciones con los filtros aplicados</p>
+        </div>
+
+        <!-- Paginación -->
+        <div class="paginacion" *ngIf="totalPaginas > 1">
+            <button class="btn-pagina" (click)="cambiarPagina(paginaActual - 1)" [disabled]="paginaActual === 1">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <span class="pagina-info">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+
+            <button class="btn-pagina" (click)="cambiarPagina(paginaActual + 1)"
+                [disabled]="paginaActual === totalPaginas">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <select [(ngModel)]="itemsPorPagina" (ngModelChange)="aplicarFiltros()" class="items-por-pagina">
+                <option [ngValue]="10">10 por página</option>
+                <option [ngValue]="25">25 por página</option>
+                <option [ngValue]="50">50 por página</option>
+                <option [ngValue]="100">100 por página</option>
+            </select>
+        </div>
+    </div>
+</div>

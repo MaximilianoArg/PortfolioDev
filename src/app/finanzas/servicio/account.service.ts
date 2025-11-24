@@ -15,11 +15,11 @@ export class AccountService {
         return this.http.get<Account[]>(this.apiUrl);
     }
 
-    createAccount(account: Account): Observable<Account> {
+    createAccount(account: Account | FormData): Observable<Account> {
         return this.http.post<Account>(this.apiUrl, account);
     }
 
-    updateAccount(id: number, account: Partial<Account>): Observable<Account> {
+    updateAccount(id: number, account: Partial<Account> | FormData): Observable<Account> {
         return this.http.patch<Account>(`${this.apiUrl}${id}/`, account);
     }
 

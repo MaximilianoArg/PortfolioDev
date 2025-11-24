@@ -2,11 +2,12 @@
 <div (click)="closeModal()" class="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
 <!-- Contenedor del Modal -->
-<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg z-50 w-full max-w-lg">
+<div
+  class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg z-50 w-full max-w-lg">
   <div class="p-6">
     <!-- Cabecera del Modal -->
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold text-gray-800">Nueva Transacción</h2>
+      <h2 class="text-xl font-bold text-gray-800">{{ isEditMode ? 'Editar' : 'Nueva' }} Transacción</h2>
       <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
     </div>
 
@@ -15,42 +16,86 @@
       <div class="space-y-4">
         <!-- Descripción -->
         <div>
-          <label for="descripcion">Descripción</label>
-          <input id="descripcion" type="text" formControlName="descripcion" class="mt-1 block w-full rounded-md border-gray-300">
+          <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+          <input id="descripcion" type="text" formControlName="descripcion"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        </div>
+
+        <!-- Cuenta Bancaria -->
+        <div>
+          <label for="account" class="block text-sm font-medium text-gray-700">Cuenta Bancaria</label>
+          <select id="account" formControlName="account"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            <option value="">Seleccionar cuenta</option>
+            @for (account of accounts; track account.id) {
+            <option [value]="account.id">{{ account.name }} - Balance: ${{ account.balance | number:'1.2-2' }}</option>
+            }
+          </select>
+          @if (selectedAccountBalance > 0 && transactionForm.get('account')?.value) {
+          <p class="mt-1 text-sm text-gray-600">
+            Balance disponible: <span class="font-semibold text-green-600">${{ selectedAccountBalance | number:'1.2-2'
+              }}</span>
+          </p>
+          }
         </div>
 
         <!-- Monto y Tipo en una fila -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="monto">Monto</label>
-            <input id="monto" type="number" formControlName="monto" class="mt-1 block w-full rounded-md border-gray-300">
+            <label for="monto" class="block text-sm font-medium text-gray-700">Monto</label>
+            <input id="monto" type="number" step="0.01" formControlName="monto"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           </div>
           <div>
-            <label for="transaccion_tipo">Tipo</label>
-            <select id="transaccion_tipo" formControlName="transaccion_tipo" class="mt-1 block w-full rounded-md border-gray-300">
-              <option value="EXPENSE">Gasto</option>
-              <option value="INCOME">Ingreso</option>
+            <label for="tipo_transaccion" class="block text-sm font-medium text-gray-700">Tipo</label>
+            <select id="tipo_transaccion" formControlName="tipo_transaccion"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="GASTO">Gasto</option>
+              <option value="INGRESO">Ingreso</option>
             </select>
           </div>
         </div>
 
+        <!-- Error de balance -->
+        @if (balanceError) {
+        <div class="p-3 bg-red-50 border border-red-200 rounded-md">
+          <div class="flex items-center">
+            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+            <p class="text-sm text-red-700">{{ balanceError }}</p>
+          </div>
+        </div>
+        }
+
         <!-- Fecha y Categoría en una fila -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="fecha">Fecha</label>
-            <input id="fecha" type="date" formControlName="fecha" class="mt-1 block w-full rounded-md border-gray-300">
+            <label for="fecha" class="block text-sm font-medium text-gray-700">Fecha</label>
+            <input id="fecha" type="date" formControlName="fecha"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           </div>
           <div>
-            <label for="categoria">Categoría</label>
-            <input id="categoria" type="text" formControlName="categoria" class="mt-1 block w-full rounded-md border-gray-300">
+            <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+            <select id="categoria" formControlName="categoria"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="">Seleccionar categoría</option>
+              @for (cat of filteredCategories; track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+              }
+            </select>
           </div>
         </div>
       </div>
 
       <!-- Botones de Acción -->
       <div class="mt-6 flex justify-end gap-3">
-        <button type="button" (click)="closeModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Cancelar</button>
-        <button type="submit" [disabled]="transactionForm.invalid" class="bg-blue-600 text-white px-4 py-2 rounded-md disabled:bg-blue-300">Guardar</button>
+        <button type="button" (click)="closeModal()"
+          class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="!isFormValid()"
+          class="bg-blue-600 text-white px-4 py-2 rounded-md disabled:bg-blue-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors">
+          Guardar
+        </button>
       </div>
     </form>
   </div>

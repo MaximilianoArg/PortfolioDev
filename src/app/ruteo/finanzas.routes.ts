@@ -2,12 +2,20 @@ import { Routes } from '@angular/router';
 
 export const FINANZAS_RUTAS: Routes = [
     {
+        path: 'dashboard',
+        loadComponent: () => import('../finanzas/dashboard-cuentas/dashboard-cuentas.component').then(m => m.DashboardCuentasComponent)
+    },
+    {
         path: 'cuentas',
         loadComponent: () => import('../finanzas/cuentas/cuentas.component').then(m => m.CuentasComponent)
     },
     {
         path: 'cuentas/:id',
         loadComponent: () => import('../finanzas/cuentas/detalle-cuenta/detalle-cuenta.component').then(m => m.DetalleCuentaComponent)
+    },
+    {
+        path: 'cuentas/:id/transacciones',
+        loadComponent: () => import('../finanzas/transacciones-cuenta/transacciones-cuenta.component').then(m => m.TransaccionesCuentaComponent)
     },
     {
         path: 'balances',
@@ -56,5 +64,8 @@ export const FINANZAS_RUTAS: Routes = [
                 path: '', redirectTo: 'cartera', pathMatch: 'full'
             }
         ]
+    },
+    {
+        path: '', redirectTo: 'dashboard', pathMatch: 'full'
     }
 ];
